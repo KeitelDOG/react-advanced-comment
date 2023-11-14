@@ -1,0 +1,103 @@
+.userInputComment {
+  padding: 3px;
+  display: flex;
+  flex-direction: row;
+}
+.authWrapper {
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border-width: 2px;
+  border-color: #ddd;
+  border-radius: 50%;
+}
+.textProgress {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  /* background:
+    radial-gradient(closest-side, white 75%, transparent 80% 100%),
+    conic-gradient(hotpink 60%, pink 0);
+  */
+}
+.textCounter {
+  font-size: 13px;
+}
+.inputWrapper {
+  flex: 1;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 6px;
+  padding-right: 6px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #77777770;
+  border-radius: 5px;
+  box-shadow: 1px 1px 4px #ddd;
+}
+.editableTools {
+  margin: 4px 0 2px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.toolsLeftSection {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.toolsRightSection {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+.tool {
+  margin-right: 20px;
+  display: flex;
+}
+.toolClickable {
+  margin-right: 20px;
+  display: flex;
+  cursor: pointer;
+}
+.mentionsContainer {
+  display: flex;
+  position: absolute;
+  top: -180px;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 1px 1px 6px #ddd;
+  border-radius: 5px;
+}
+.emojiPickerContainer {
+  background-color: #fff;
+  box-shadow: 1px 1px 6px #ddd;
+  border-radius: 5px;
+}
+.submit {
+  padding: 6px 8px;
+  font-size: 13px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.warning {
+  flex-direction: row;
+  align-items: center;
+  min-height: 40px;
+}
+.warningText {
+  color: #777777;
+}
