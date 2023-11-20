@@ -14,7 +14,7 @@ const plugins = [
   peerDepsExternal(),
   resolve(),
   commonjs(),
-  terser(),
+  // terser(),
   postcss(),
   svg({
     /**
@@ -22,7 +22,7 @@ const plugins = [
      * For example, for Server Side Rendering.
      * Otherwise, the plugin imports SVG as DOM node.
      */
-      stringify: false
+    stringify: false
   }),
 ];
 

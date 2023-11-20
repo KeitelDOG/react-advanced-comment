@@ -1,5 +1,13 @@
 import React from 'react';
-import { EmojiTabIconProps } from './index.types';
+import { Category } from './EmojiPicker';
+
+export type EmojiTabIconProps = {
+  category: Category,
+  size: number,
+  /** The View Component to display the EmojiTabIcon */
+  Presentation(props: any) : React.JSX.Element,
+  onClick(cat : Category) : void,
+}
 
 export default function EmojiTabIcon(props : EmojiTabIconProps) {
   const { category, Presentation, size = 24, onClick } = props;

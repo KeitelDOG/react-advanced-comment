@@ -1,7 +1,14 @@
 import React from 'react';
-import { EmojiCellProps } from './index.types';
 import { combineClasses } from '../helpers/combineClasses';
 import defaultClasses from './EmojiCell.module.css';
+import { Emoji } from './EmojiPicker';
+
+export type EmojiCellProps = {
+  emoji: Emoji,
+  moduleClasses?: { [key : string] : any },
+  onHover?(isHover: boolean, emoji: Emoji) : void,
+  onSelect(emoji: Emoji, emojiChar: string) : void,
+}
 
 // convert utf6 string to representing charater.
   // Useful for emoji (unified code to emoji char)

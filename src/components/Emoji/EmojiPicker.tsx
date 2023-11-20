@@ -4,11 +4,62 @@ import EmojiTabs from './EmojiTabs';
 import EmojiCell from './EmojiCell';
 import { combineClasses } from '../helpers/combineClasses';
 import getCategories from './emojiCategories';
-import { Emoji, Category, EmojiPickerProps, EmojiCellProps } from './index.types';
 import EmojiTabIcon from './EmojiTabIcon';
 import defaultClasses from './EmojiPicker.module.css';
 import Magnify from '../../svg/Magnify';
 import Close from '../../svg/Close';
+import { CategoryName } from './emojiCategories';
+import { User } from '../Mentions/Mentions';
+import { EmojiCellProps } from './EmojiCell';
+
+export type Category = {
+  id: string,
+  name: string,
+  icon(props: any) : React.JSX.Element,
+  color: string,
+};
+
+export type Categories = {
+  [key: string]: Category,
+};
+
+export type Emoji = {
+  name: string,
+  unified: string,
+  short_name: string,
+  short_names: string[],
+  category: string,
+  sort_order: number,
+  added_in: string,
+};
+
+export type EmojiPickerProps = {
+  /** Array of Emoji with standard attributes:
+   * (name, unified, short_name, short_name, category, sort_order, added_in)
+   */
+  emojis: Emoji[],
+
+  /** Pass recent emojis to automatically load them into history of recently used emoji */
+  recentEmojis?: Emoji[],
+
+  /** Which emoji category to load initially */
+  initialCategory?: CategoryName,
+
+  /** Set height for Emoji Picker container. You can leave it blank and set height in an outside container. */
+  height?: number,
+
+  /** Number of column to display Emojis in grid */
+  numColumns?: number,
+
+   /** A Class Module to provide to override some classes of the default Class Modules */
+  moduleClasses?: { [key : string] : any },
+
+  /** Callback when an Emoji is selected */
+  onEmojiSelected(emojiChar : string) : void,
+
+  /** Callback when the EmojiPicker container is closed */
+  onClose() : void,
+}
 
 const groupedCategories = (emos : Emoji[]) => {
   return emos.reduce((acc, emo) => {

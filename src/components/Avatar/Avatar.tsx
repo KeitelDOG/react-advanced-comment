@@ -1,5 +1,5 @@
 import React from 'react';
-import { User } from '../Mentions/index.types';
+import { User } from '../Mentions/Mentions';
 import { combineClasses } from '../helpers/combineClasses';
 import defaultClasses from './Avatar.module.css';
 

@@ -1,43 +1,78 @@
 import React, { ForwardedRef, useEffect } from 'react';
-import { User } from '../Mentions/index.types';
 import { combineClasses } from '../helpers/combineClasses';
 import defaultClasses from './CoreInput.module.css';
+import { User } from '../Mentions/Mentions';
 
 export type CoreInputProps = {
   /** Array of users to match against @ mention and filter while typing */
   users?: User[],
+
   /** Minimum characters allowing to send the comment. Default is 0. */
   minLength?: number,
+
   /** Maximum characters before blocking the input. Default is 0 for no limit */
   maxLength?: number,
+
   /** How many users can be mentioned in the comments, default is 2. 0 is for no limit  */
   mentionsLimit?: number,
+
   /** Bottom line color for personalisation to match the Application theme */
   lineColor?: string,
+
   /** Color to highlight the tag for mentioned users */
   tagColor?: string,
+
   /** Pass an Emoji string here to be added in the current carret position. It will call the onEmojiSet callback. */
   emoji?: string,
+
   /** Pass a User here to be added as mentioned User in the current carret position. It will call the onMentionedUserSet callback */
   mentionedUser?: User,
+
   /** A Class Module to provide to override some classes of the default Class Modules */
   moduleClasses?: { [key : string] : any },
+
   /** Tell the input to transform and send the content back via onSend callback */
   sending: boolean,
+
   /** Callback when the passed Emoji string has been inserted */
-  onEmojiSet: Function,
+  onEmojiSet() : void,
+
   /** Callback when the passed User has been inserted for mention */
   onMentionedUserSet() : void,
+
   /** Callback when the @ typing is matching some users */
   onMentionMatch?(users: User[]) : void,
+
   /** Callback when the mentioned Users list is changed in the input */
-  onMentionedUsersUpdate(ids: number[]) : void,
+  onMentionedUsersUpdate(ids: (number | string)[]) : void,
+
+  /** Implementation to convert mention tag to unique string that identifies the user in the comment.
+   * It is important to transform each tag in string to make the counting in total text length.
+   * For example, if User(10) is Keitel Jovin:
+   *
+   * `<div>Hello <span data-id="10">Keitel Jovin</span>` will be transfom to "Hello {{10}}".
+   *
+   * with `mentionToString(10); // => {{10}}`
+   *
+   * And "Hello {{10}}" will be only 12 chars, instead of 18 chars in "Hello Keitel Jovin" provided by the HTML Div input.
+   * An example of algorithm:
+   * ```
+   * mentionToString = (id: number | string) : string => {
+   *   return `{{${id}}}`;
+   * }
+   * ```
+  */
+  mentionToString?(id : number | string) : string,
+
   /**  Callback with true when content is between minLength and maxLength, and with false when content is out of range */
   onValidationChange?(isValid: boolean) : void,
+
   /** Callback on each input and change to track the length of comment outside the component */
   onLengthChange?(length: number) : void,
+
   /** Callback on each input and change to track the whole content outside the component. Might be heavy if text in huge. */
   onContentChange?(content: string) : void,
+
   /** Callback on sending the Content back to parent */
   onSend(content: string) : void,
 };
@@ -49,6 +84,10 @@ type Caret = {
 
 // No-Break Space (unicode character, equivalent to &nbsp; in HTML)
 const NBSP = '\u00A0';
+
+const mentionToStringDefault = (id: number | string) : string => {
+  return `{{${id}}}`;
+}
 
 /**
  * The CoreInput and the core functionalities for the comment Input
@@ -67,6 +106,7 @@ export default function CoreInput(props: CoreInputProps) {
     mentionedUser,
     moduleClasses,
     sending = false,
+    mentionToString = mentionToStringDefault,
     onEmojiSet,
     onMentionedUserSet,
     onMentionMatch = () => {},
@@ -322,7 +362,7 @@ export default function CoreInput(props: CoreInputProps) {
     [getCaretPosition],
   );
 
-  const getMentionedIds = () : number[] => {
+  const getMentionedIds = () : (number | string)[] => {
     const editable = ref.current as HTMLDivElement;
     let ids : number[] = [];
     Array.from(editable.childNodes).forEach((node : ChildNode) => {
@@ -340,7 +380,8 @@ export default function CoreInput(props: CoreInputProps) {
     const contents = Array.from(editable.childNodes).map((node : ChildNode, index) => {
       if (node.nodeName === 'SPAN') {
         const nodeElem = (node as HTMLSpanElement);
-        return `{{${nodeElem.getAttribute('data-id')}}}`;
+        const id = nodeElem.getAttribute('data-id') as string;
+        return mentionToString(id);
       } else if (node.nodeName === 'BR') {
         // do not count last BR tag cause browser add 2 <br>
         // when pressing enter for new line if it's at the end

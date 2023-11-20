@@ -1,4 +1,4 @@
-export type CategoryName = 'history' | 'emotion' | 'nature' | 'food' | 'activities' |'places' | 'objects' | 'symbols' | 'flags';
+export type CategoryName = 'history' | 'emotion' | 'nature' | 'food' | 'activities' | 'places' | 'objects' | 'symbols' | 'flags';
 
 type Colors = {
   [key in CategoryName]?: string

@@ -2,7 +2,22 @@ import React from 'react';
 import Close from '../../svg/Close';
 import defaultClasses from './Mentions.module.css';
 import { combineClasses } from '../helpers/combineClasses';
-import { User, MentionsProps } from './index.types';
+
+export type User = {
+  id: number | string,
+  name: string,
+  image?: string,
+};
+
+export type MentionsProps = {
+  users: User[],
+  renderCloseIcon?: React.ReactNode,
+  onClose?() : void,
+  /** Callback with User id when a User is mentioned */
+  onMentionSelected(id: number | string) : void,
+  moduleClasses?: { [key : string] : any }
+};
+
 
 export default function Mentions(props : MentionsProps) {
   const { users, renderCloseIcon, onClose, onMentionSelected, moduleClasses } = props;
@@ -10,7 +25,7 @@ export default function Mentions(props : MentionsProps) {
 
   const handleMentionSelected = (user : User) => {
     if (typeof onMentionSelected === 'function') {
-      onMentionSelected(user);
+      onMentionSelected(user.id);
     }
   };
 

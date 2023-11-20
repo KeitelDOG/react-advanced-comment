@@ -1,12 +1,25 @@
 import React, { ReactNode } from 'react';
 
 import CoreInput from './CoreInput';
-import { Emoji, RenderEmojiPickerProps } from '../Emoji/index.types';
-import { User, RenderMentionsProps } from '../Mentions/index.types';
 import { combineClasses } from '../helpers/combineClasses';
 import defaultClasses from './CommentInput.module.css';
 import EmojiIcon from '../../svg/Emoticon';
 import AtIcon from '../../svg/At';
+import { User } from '../Mentions/Mentions';
+import { Emoji } from '../Emoji/EmojiPicker';
+
+type RenderEmojiPickerProps = {
+  /** provide a Callback passing the Emoji Character when Emoji is selected */
+  onEmojiSelected(emojiChar : string) : void,
+  onClose() : void,
+}
+
+type RenderMentionsProps = {
+  users: User[],
+  /** provide a Callback passing the User id when a User is mentioned */
+  onMentionSelected(id: number | string) : void,
+  onClose() : void
+};
 
 export type CommentInputProps = {
   /** authenticated user info if any */
@@ -77,16 +90,22 @@ export type CommentInputProps = {
   /** List of Emoji to use for Emoji Picker, matching the Emoji Type */
   emojis?: Emoji[],
 
+  /** Render Authenticated User Avatar in needed. */
   renderAvatar?: React.ReactNode,
 
+  /** Render the Icon responsible to open the EmojiPicker if needed. An Icon is rendered by default. */
   renderEmojiIcon?: React.ReactNode,
 
+  /** Render the Icon responsible to open the Mentions list if needed. An Icon is rendered by default. */
   renderAtIcon?: React.ReactNode,
 
+  /** Render a Submit Button Avatar in needed. A button is rendered by default */
   renderSubmitButton?: React.ReactNode,
 
+  /** Custom Text that should appear in Submit Button. Default: 'Send' */
   submitButtonText?: string,
 
+  /** Custom Color of the Submit Button. Default: some green color */
   submitButtonColor?: string,
 
   /** Should the submit button be disabled no matter what? */
@@ -161,7 +180,7 @@ export default function CommentInput(props : CommentInputProps) {
 
   const [mentionedUser, setMentionedUser] = React.useState<User>();
   const [mentionUsers, setMentionUsers] = React.useState<User[]>([]);
-  const [mentionedIds, setMentionedIds] = React.useState<number[]>([]);
+  const [mentionedIds, setMentionedIds] = React.useState<(number | string)[]>([]);
   const [enableSubmit, setEnableSubmit] = React.useState<boolean>(false);
   const [showEmoji, setShowEmoji] = React.useState<boolean>(false);
   const [emoji, setEmoji] = React.useState<string>();
@@ -178,8 +197,9 @@ export default function CommentInput(props : CommentInputProps) {
   if (renderMentions) {
     mentionView = renderMentions({
       users: mentionUsers,
-      onMentionSelected: (tu : User) => {
-        setMentionedUser(tu);
+      onMentionSelected: (id : number | string) => {
+        const usr = mentionUsers.filter(u => u.id === id)[0];
+        setMentionedUser(usr);
       },
       onClose: () => {
         setMentionUsers([]);
@@ -278,7 +298,7 @@ export default function CommentInput(props : CommentInputProps) {
             onEmojiSet={() => setEmoji(undefined)}
             onMentionedUserSet={() => setMentionedUser(undefined)}
             onMentionMatch={(usrs: User[]) => {
-              setMentionUsers(usrs)
+              setMentionUsers(usrs);
             }}
             onMentionedUsersUpdate={(ids: number[]) => {
               setMentionedIds(ids);

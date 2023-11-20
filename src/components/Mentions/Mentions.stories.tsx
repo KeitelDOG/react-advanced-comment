@@ -1,7 +1,7 @@
 import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
 import Mentions from './Mentions';
-import { User } from './index.types';
+import { User } from './Mentions';
 
 import keitelPic from '../../pics/keitel.jpg';
 import julioPic from '../../pics/julio.jpg';
