@@ -172,23 +172,48 @@ export default function CoreInput(props: CoreInputProps) {
 
   const ref = React.useRef<HTMLDivElement>(null);
 
-  const handleContentChange = (content: string) : void => {
+  const handleContentChange = () : void => {
+    // handle content change
+    const content: string = getContent();
     onLengthChange(content.length);
     if (onContentChange) {
       onContentChange(content);
     }
+
+    // validate in content is within limit
+    if (content && content.length >= minLength) {
+      onValidationChange(true);
+    } else {
+      onValidationChange(false);
+    }
+
+    // update mentions if any
+    const ids = getMentionedIds();
+    onMentionedUsersUpdate(ids);
+  }
+
+  const createMentionTag = (user: User) : HTMLSpanElement => {
+    const tag: HTMLSpanElement = document.createElement('span');
+    // Android chrome browser cannot delete SPAN when contenteditable is set to false
+    // tag.setAttribute('contenteditable', false);
+    // add data-id to tagged user
+    tag.setAttribute('data-id', user.id.toString());
+    tag.style.color = tagColor;
+    tag.style.fontWeight = 'bold';
+    tag.textContent = user.name;
+    return tag;
   }
 
   const getCaretPosition = () : Caret => {
-    const editable = ref.current as HTMLDivElement;
+    const editable: HTMLDivElement = ref.current as HTMLDivElement;
     /*
     Note: Anchor and focus should not be confused with the start and end positions of a selection. The anchor can be placed before the focus or vice versa, depending on the direction you made your selection.
     https://developer.mozilla.org/en-US/docs/Web/API/Selection
     */
 
     // get window selection object
-    const sel = window.getSelection();
-    const cPos = { start: 0, end: 0 };
+    const sel: Selection | null = window.getSelection();
+    const cPos: Caret = { start: 0, end: 0 };
 
     // check each child node in editable
     for (let i = 0; i < editable.childNodes.length; i++) {
@@ -250,7 +275,7 @@ export default function CoreInput(props: CoreInputProps) {
   };
 
   const setCaretPosition = (cPos : Caret) => {
-    const editable = ref.current as HTMLDivElement;
+    const editable: HTMLDivElement = ref.current as HTMLDivElement;
 
     let nodeIndex = 0;
     let childPos = cPos.start;
@@ -278,7 +303,7 @@ export default function CoreInput(props: CoreInputProps) {
   };
 
   const compactEditableNodes = () => {
-    const editable = ref.current as HTMLDivElement;
+    const editable: HTMLDivElement = ref.current as HTMLDivElement;
     // Compact nodes, Concatenate all adjacent Text Node
     const nodes : ChildNode[] = [];
     const childNodes = Array.from(editable.childNodes);
@@ -374,7 +399,7 @@ export default function CoreInput(props: CoreInputProps) {
 
   const getNodeIndexAndChildPos = React.useCallback(
     (match? : string) => {
-      const editable = ref.current as HTMLDivElement;
+      const editable: HTMLDivElement = ref.current as HTMLDivElement;
       const crt = getCaretPosition();
       let childPos = crt.start;
       let nodeIndex = 0;
@@ -407,7 +432,7 @@ export default function CoreInput(props: CoreInputProps) {
   );
 
   const getMentionedIds = () : (number | string)[] => {
-    const editable = ref.current as HTMLDivElement;
+    const editable: HTMLDivElement = ref.current as HTMLDivElement;
     let ids : number[] = [];
     Array.from(editable.childNodes).forEach((node : ChildNode) => {
       if (node.nodeName === 'SPAN') {
@@ -420,7 +445,7 @@ export default function CoreInput(props: CoreInputProps) {
   };
 
   const getContent = () : string => {
-    const editable = ref.current as HTMLDivElement;
+    const editable: HTMLDivElement = ref.current as HTMLDivElement;
     const contents = Array.from(editable.childNodes).map((node : ChildNode, index) => {
       if (node.nodeName === 'SPAN') {
         const nodeElem = (node as HTMLSpanElement);
@@ -441,7 +466,7 @@ export default function CoreInput(props: CoreInputProps) {
   };
 
   React.useEffect(() => {
-    const editable = ref.current as HTMLDivElement;
+    const editable: HTMLDivElement = ref.current as HTMLDivElement;
     if (initialValue && initialValue.length) {
       const parts : ContentPart[] = helper.formatContent(
         initialValue,
@@ -468,19 +493,18 @@ export default function CoreInput(props: CoreInputProps) {
 
         } else if (part.type === 'mention') {
           const usr: User = part.data as User;
-          const tag = document.createElement('spand');
-          tag.setAttribute('data-id', usr.id.toString());
-          tag.style.color = tagColor;
-          tag.style.fontWeight = 'bold';
-          tag.textContent = usr.name;
+          const tag = createMentionTag(usr);
           editable.append(tag);
         }
       });
+
+      // update content
+      handleContentChange();
     }
   }, []);
 
   React.useEffect(() => {
-    const editable = ref.current as HTMLDivElement;
+    const editable: HTMLDivElement = ref.current as HTMLDivElement;
     // EVENT LISTENERS ARE SET ONLY ONCE
     if (!initialized && editable) {
       // plaintext-only browser support: https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable
@@ -492,7 +516,7 @@ export default function CoreInput(props: CoreInputProps) {
 
       // ON KEYDOWN ------------------------------
       const onKeydown = (event: KeyboardEvent) => {
-        const editable = ref.current as HTMLDivElement;
+        const editable: HTMLDivElement = ref.current as HTMLDivElement;
         // trap the return key being pressed
         if (event.key === 'Enter') {
           document.execCommand('insertLineBreak');
@@ -513,26 +537,17 @@ export default function CoreInput(props: CoreInputProps) {
       };
       editable.addEventListener('keydown', onKeydown);
 
-      // ON CLICK ------------------------------
+      // ON CLICK ----
       const onClick = () => {
         const crt = getCaretPosition();
         setCaret(crt);
       };
       editable.addEventListener('click', onClick);
 
-      // ON INPUT ----------------------------------
+      // ON INPUT ----
       const onInput = (event: Event) => {
-        // console.log('input event textContent', event.target.textContent);
-
         const val = (event.target as HTMLDivElement).textContent;
-        const cnt = getContent();
-        handleContentChange(cnt);
-
-        if (val && val.length >= minLength) {
-          onValidationChange(true);
-        } else {
-          onValidationChange(false);
-        }
+        handleContentChange();
 
         const crt = getCaretPosition();
         setCaret(crt);
@@ -574,7 +589,7 @@ export default function CoreInput(props: CoreInputProps) {
           return;
         }
 
-        // MENTION -------------
+        // MENTION --
         const mentionedIds = getMentionedIds();
         if (mentionsLimit > 0 && mentionedIds.length >= mentionsLimit) {
           // Skip after mentions limit
@@ -622,16 +637,16 @@ export default function CoreInput(props: CoreInputProps) {
 
     If the startNode is a Node of type Text, Comment, or CDataSection, then startOffset is the number of characters from the start of startNode. For other Node types, startOffset is the number of child nodes between the start of the startNode.
     */
-    const editable = ref.current as HTMLDivElement;
+    const editable: HTMLDivElement = ref.current as HTMLDivElement;
 
     if (mentionedUser) {
       editable.focus();
 
       const mentionedIds = getMentionedIds();
-        if (mentionsLimit > 0 && mentionedIds.length >= mentionsLimit) {
-          // Skip after mentions limit
-          return;
-        }
+      if (mentionsLimit > 0 && mentionedIds.length >= mentionsLimit) {
+        // Skip after mentions limit
+        return;
+      }
 
       // if there is no child node while inserting element,
       // append empty string to create new node for range
@@ -651,7 +666,8 @@ export default function CoreInput(props: CoreInputProps) {
       const match = (matches || [])[0] as string;
 
       // 1- Create tag span HTML
-      const tag = document.createElement('span');
+      // let tag = document.createElement('span');
+      const tag = createMentionTag(mentionedUser);
 
       let rg = document.createRange();
       let sel = window.getSelection() as Selection;
@@ -678,7 +694,8 @@ export default function CoreInput(props: CoreInputProps) {
         rg.setEnd(textNode, val.indexOf(match) + match.length);
         sel.removeAllRanges();
         sel.addRange(rg);
-        rg.surroundContents(tag);
+        rg.deleteContents();
+        rg.insertNode(tag);
       } else {
         rg.setStart(editable.childNodes[nodeIndex], childPos);
         rg.setEnd(editable.childNodes[nodeIndex], childPos);
@@ -686,15 +703,6 @@ export default function CoreInput(props: CoreInputProps) {
         sel.addRange(rg);
         rg.insertNode(tag);
       }
-
-      // add element attribute after (For some reason, range adds it with no text content)
-      // Android chrome browser cannot delete SPAN when contenteditable is set to false
-      // tag.setAttribute('contenteditable', false);
-      // add data-id to tagged user
-      tag.setAttribute('data-id', mentionedUser.id.toString());
-      tag.style.color = tagColor;
-      tag.style.fontWeight = 'bold';
-      tag.textContent = mentionedUser.name;
 
       // Concatenate all adjacent Text Node
       compactEditableNodes();
@@ -745,9 +753,8 @@ export default function CoreInput(props: CoreInputProps) {
       const newCrt = getCaretPosition();
       setCaret(newCrt);
 
-      // update length
-      const cnt = getContent();
-      handleContentChange(cnt);
+      // update content
+      handleContentChange();
     }
   }, [
     mentionedUser,
@@ -759,7 +766,7 @@ export default function CoreInput(props: CoreInputProps) {
   ]);
 
   React.useEffect(() => {
-    const editable = ref.current as HTMLDivElement;
+    const editable: HTMLDivElement = ref.current as HTMLDivElement;
     if (emoji) {
       editable.focus();
       // if there is no child node while inserting element,
@@ -813,9 +820,8 @@ export default function CoreInput(props: CoreInputProps) {
       const newCrt = getCaretPosition();
       setCaret(newCrt);
 
-      // update length
-      const cnt = getContent();
-      handleContentChange(cnt);
+      // update content
+      handleContentChange();
     }
   }, [
     emoji,

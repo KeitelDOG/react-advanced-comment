@@ -30,9 +30,10 @@ const Template: StoryFn<typeof CommentInput> = (args) => {
 
 const users = [
   { id: 1, name: 'Keitel Jovin', image: keitelPic },
-  { id: 2, name: 'Julio Fils', image: julioPic },
-  { id: 3, name: 'Jetro Joseph', image: jetroPic },
-  { id: 4, name: 'Djason Sylvaince', image: djasonPic },
+  { id: 2, name: 'KeitelDOG', image: keitelPic },
+  { id: 3, name: 'Julio Fils', image: julioPic },
+  { id: 4, name: 'Jetro Joseph', image: jetroPic },
+  { id: 5, name: 'Djason Sylvaince', image: djasonPic },
 ];
 
 const initialValue = `Hello {{2}} well said 😃.

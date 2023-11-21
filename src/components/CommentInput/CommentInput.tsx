@@ -161,6 +161,7 @@ export default function CommentInput(props : CommentInputProps) {
   const [showEmoji, setShowEmoji] = React.useState<boolean>(false);
   const [emoji, setEmoji] = React.useState<string>();
   // sending mechanism is a way to tell CoreInput to throw out the content for for
+  const [textLength, setTextLength] = React.useState<number>(initialValue.length);
   const [content, setContent] = React.useState<string>(initialValue);
   const [sending, setSending] = React.useState<boolean>(false);
 
@@ -231,10 +232,10 @@ export default function CommentInput(props : CommentInputProps) {
   }
 
   // Calculations for text and color progress, submit button status
-  const charsRemained = maxLength - content.length;
+  const charsRemained = maxLength - textLength;
   const submitDisabled = forceDisableSubmitButton || !enableSubmit || charsRemained < 0;
 
-  const percent = Math.floor(100 * (content.length / maxLength));
+  const percent = Math.floor(100 * (textLength / maxLength));
   let progressColor;
   if (percent >= 100) {
     progressColor = textProgressColors.four;
@@ -278,11 +279,15 @@ export default function CommentInput(props : CommentInputProps) {
               setMentionedIds(ids);
             }}
             onValidationChange={(val: boolean) => setEnableSubmit(val)}
+            onLengthChange={(length: number) => {
+              setTextLength(length);
+            }}
             onContentChange={(cnt: string) => {
+              // only keep content in State if onContentChange callback is provided
               if (onContentChange) {
                 onContentChange(cnt);
+                setContent(cnt);
               }
-              setContent(cnt);
             }}
             sending={sending}
             onSend={(cnt: string) => {

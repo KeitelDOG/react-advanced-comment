@@ -22,7 +22,7 @@ const Template: StoryFn<typeof CoreInput> = (args) => {
 };
 
 const users = [
-  { id: 1, name: 'Keitel Jovin', image: keitelPic },
+  { id: 1, name: 'KeitelDOG', image: keitelPic },
   { id: 2, name: 'Julio Fils', image: julioPic },
 ];
 

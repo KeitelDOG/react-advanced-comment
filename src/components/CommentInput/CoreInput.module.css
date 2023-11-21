@@ -1,7 +1,7 @@
 .editableContainer {
   padding: 2px;
   display: flex;
-  width: 100%;
+  flex-direction: row;
   border-bottom: 1px solid #ccc;
 }
 .input {
