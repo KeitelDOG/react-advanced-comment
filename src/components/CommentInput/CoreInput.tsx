@@ -2,8 +2,9 @@ import React, { ForwardedRef, useEffect } from 'react';
 import { combineClasses } from '../helpers/combineClasses';
 import defaultClasses from './CoreInput.module.css';
 import { User } from '../Mentions/Mentions';
+import helper, { ContentPart } from './helper';
 
-export type CoreInputProps = {
+export type BaseInputProps = {
   /** Array of users to match against @ mention and filter while typing */
   users?: User[],
 
@@ -12,6 +13,14 @@ export type CoreInputProps = {
 
   /** Maximum characters before blocking the input. Default is 0 for no limit */
   maxLength?: number,
+
+  /** Pass an initial text value in the input to be displayed.
+   * Useful if User want to Edit a comment. By default, pass
+   */
+  initialValue?: string,
+
+  /** Initial list of Users mentioned in the initial value. Only use with initialValue prop if it contains Users */
+  initialMentionedUsers?: User[],
 
   /** How many users can be mentioned in the comments, default is 2. 0 is for no limit  */
   mentionsLimit?: number,
@@ -22,31 +31,19 @@ export type CoreInputProps = {
   /** Color to highlight the tag for mentioned users */
   tagColor?: string,
 
-  /** Pass an Emoji string here to be added in the current carret position. It will call the onEmojiSet callback. */
-  emoji?: string,
-
-  /** Pass a User here to be added as mentioned User in the current carret position. It will call the onMentionedUserSet callback */
-  mentionedUser?: User,
-
   /** A Class Module to provide to override some classes of the default Class Modules */
   moduleClasses?: { [key : string] : any },
 
-  /** Tell the input to transform and send the content back via onSend callback */
-  sending: boolean,
-
-  /** Callback when the passed Emoji string has been inserted */
-  onEmojiSet() : void,
-
-  /** Callback when the passed User has been inserted for mention */
-  onMentionedUserSet() : void,
-
-  /** Callback when the @ typing is matching some users */
-  onMentionMatch?(users: User[]) : void,
-
-  /** Callback when the mentioned Users list is changed in the input */
-  onMentionedUsersUpdate(ids: (number | string)[]) : void,
+  /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any
+   *
+   * N.B. **A Default RegExp is already provided**
+   */
+  mentionParseRegex?: RegExp,
 
   /** Implementation to convert mention tag to unique string that identifies the user in the comment.
+   *
+   * N.B. **A Default Implementation is already provided**
+   *
    * It is important to transform each tag in string to make the counting in total text length.
    * For example, if User(10) is Keitel Jovin:
    *
@@ -64,8 +61,19 @@ export type CoreInputProps = {
   */
   mentionToString?(id : number | string) : string,
 
-  /**  Callback with true when content is between minLength and maxLength, and with false when content is out of range */
-  onValidationChange?(isValid: boolean) : void,
+  /** Implementation to parse the mention string to ID value.
+   *
+   * N.B. **A Default Implementation is already provided**
+   *
+   * When editing, an initial value can be passed.
+   * If that value contains mentions, like:
+   * `Hello {{10}} and {{747}}.`
+   * You provide a regex like /{{[0-9]*}}/m and a match is found: {{10}}
+   *
+   * Now you need a function telling the input how to retrieve the ID in it.
+   *
+   */
+  parseMentionId?(stringWithID : string) : number | string,
 
   /** Callback on each input and change to track the length of comment outside the component */
   onLengthChange?(length: number) : void,
@@ -75,6 +83,35 @@ export type CoreInputProps = {
 
   /** Callback on sending the Content back to parent */
   onSend(content: string) : void,
+}
+
+type CoreInputProps = BaseInputProps & {
+  /** Pass an Emoji string here to be added in the current carret position. It will call the onEmojiSet callback. */
+  emoji?: string,
+
+  /** Pass a User here to be added as mentioned User in the current carret position. It will call the onMentionedUserSet callback */
+  mentionedUser?: User,
+
+  /** Tell the input to transform and send the content back via onSend callback.
+   * When not using onContentChange callback for typing performance, only onLengthChange is called.
+   * Therefore you can pass `sending={true}` at the end to get the content for you.
+  */
+  sending: boolean,
+
+  /** Callback when the passed Emoji string has been inserted */
+  onEmojiSet() : void,
+
+  /** Callback when the passed User has been inserted for mention */
+  onMentionedUserSet() : void,
+
+  /** Callback when the @ typing is matching some users */
+  onMentionMatch?(users: User[]) : void,
+
+  /** Callback when the mentioned Users list is changed in the input */
+  onMentionedUsersUpdate(ids: (number | string)[]) : void,
+
+  /**  Callback with true when content is between minLength and maxLength, and with false when content is out of range */
+  onValidationChange?(isValid: boolean) : void,
 };
 
 type Caret = {
@@ -89,6 +126,11 @@ const mentionToStringDefault = (id: number | string) : string => {
   return `{{${id}}}`;
 }
 
+const parseMentionIdDefault = (stringWithID: string) : number | string => {
+  const id : string = stringWithID.slice(2, -2);
+  return isNaN(parseInt(id)) ? id : Number(id);
+}
+
 /**
  * The CoreInput and the core functionalities for the comment Input
  * based on an Editable DIV (`<div contenteditable ></div>`)
@@ -99,20 +141,24 @@ export default function CoreInput(props: CoreInputProps) {
     users = [],
     minLength = 1,
     maxLength = 0,
+    initialValue = '',
+    initialMentionedUsers = [],
     mentionsLimit = 2,
     lineColor,
     tagColor = '#358856',
     emoji,
     mentionedUser,
-    moduleClasses,
     sending = false,
+    moduleClasses,
+    mentionParseRegex = /{{[0-9]*}}/m,
     mentionToString = mentionToStringDefault,
+    parseMentionId = parseMentionIdDefault,
     onEmojiSet,
     onMentionedUserSet,
     onMentionMatch = () => {},
     onMentionedUsersUpdate,
     onValidationChange = () => {},
-    onLengthChange,
+    onLengthChange = () => {},
     onContentChange,
     onSend,
   } = props;
@@ -127,9 +173,7 @@ export default function CoreInput(props: CoreInputProps) {
   const ref = React.useRef<HTMLDivElement>(null);
 
   const handleContentChange = (content: string) : void => {
-    if (onLengthChange) {
-      onLengthChange(content.length);
-    }
+    onLengthChange(content.length);
     if (onContentChange) {
       onContentChange(content);
     }
@@ -395,6 +439,45 @@ export default function CoreInput(props: CoreInputProps) {
 
     return contents.join('');
   };
+
+  React.useEffect(() => {
+    const editable = ref.current as HTMLDivElement;
+    if (initialValue && initialValue.length) {
+      const parts : ContentPart[] = helper.formatContent(
+        initialValue,
+        initialMentionedUsers,
+        mentionParseRegex,
+        parseMentionId
+      );
+
+      parts.forEach((part : ContentPart) => {
+        if (part.type === 'text') {
+          // check for new line
+          const textContent : string = part.data as string;
+          const lines : string[] = textContent.split(/\r\n|\r|\n/);
+          lines.forEach((line: string, ind: number) => {
+            const text = document.createTextNode(line);
+            editable.append(text);
+
+            // add BR tag if not the last line
+            if (ind !== lines.length - 1) {
+              const br = document.createElement('br');
+              editable.append(br);
+            }
+          })
+
+        } else if (part.type === 'mention') {
+          const usr: User = part.data as User;
+          const tag = document.createElement('spand');
+          tag.setAttribute('data-id', usr.id.toString());
+          tag.style.color = tagColor;
+          tag.style.fontWeight = 'bold';
+          tag.textContent = usr.name;
+          editable.append(tag);
+        }
+      });
+    }
+  }, []);
 
   React.useEffect(() => {
     const editable = ref.current as HTMLDivElement;

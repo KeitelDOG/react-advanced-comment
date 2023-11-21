@@ -4,7 +4,7 @@ import CommentInput from './CommentInput';
 import Avatar from '../Avatar';
 import EmojiPicker from '../Emoji';
 import Mentions from '../Mentions';
-import { User } from '../Mentions/index.types';
+import { RenderMentionsProps, RenderEmojiPickerProps } from './CommentInput';
 import emojis from '../../json/emoji-datasource-light.json';
 
 import keitelPic from '../../pics/keitel.jpg';
@@ -35,6 +35,10 @@ const users = [
   { id: 4, name: 'Djason Sylvaince', image: djasonPic },
 ];
 
+const initialValue = `Hello {{2}} well said 😃.
+
+Hi {{3}} I agree with that too 👍 brother.`;
+
 export const MainCommentInput = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 MainCommentInput.args = {
@@ -42,6 +46,8 @@ MainCommentInput.args = {
   users: users,
   minLength: 1,
   maxLength: 128,
+  initialValue,
+  initialMentionedUsers: [users[1], users[2]],
   showCounterAt: 30,
   blockInputOnMaxLength: false,
   mentionsLimit: 2,
@@ -54,14 +60,14 @@ MainCommentInput.args = {
   ),
   // renderEmojiIcon: <ToolIcon src={emojiIcon} />,
   // renderAtIcon: <ToolIcon src={atIcon} />,
-  renderMentions: ({ users, onMentionSelected, onClose }) => (
+  renderMentions: ({ users, onMentionSelected, onClose } : RenderMentionsProps) => (
     <Mentions
       users={users}
       onClose={onClose}
       onMentionSelected={onMentionSelected}
     />
   ),
-  renderEmojiPicker: ({ onEmojiSelected, onClose }) => (
+  renderEmojiPicker: ({ onEmojiSelected, onClose } : RenderEmojiPickerProps) => (
     <EmojiPicker
       emojis={emojis}
       height={280}

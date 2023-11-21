@@ -5,37 +5,25 @@ import { combineClasses } from '../helpers/combineClasses';
 import defaultClasses from './CommentInput.module.css';
 import EmojiIcon from '../../svg/Emoticon';
 import AtIcon from '../../svg/At';
+import { BaseInputProps } from './CoreInput';
 import { User } from '../Mentions/Mentions';
-import { Emoji } from '../Emoji/EmojiPicker';
 
-type RenderEmojiPickerProps = {
+export type RenderEmojiPickerProps = {
   /** provide a Callback passing the Emoji Character when Emoji is selected */
   onEmojiSelected(emojiChar : string) : void,
   onClose() : void,
 }
 
-type RenderMentionsProps = {
+export type RenderMentionsProps = {
   users: User[],
   /** provide a Callback passing the User id when a User is mentioned */
   onMentionSelected(id: number | string) : void,
   onClose() : void
 };
 
-export type CommentInputProps = {
+type CommentInputProps = BaseInputProps & {
   /** authenticated user info if any */
   auth?: User,
-
-  /** Array of users to match against @ mention and filter while typing */
-  users: User[],
-
-  /** Minimum characters allowing to send the comment. Default is 0. */
-  minLength?: number,
-
-  /** Maximum characters before blocking the input. Default is 0 for no limit */
-  maxLength?: number,
-
-  /** How many users can be mentioned in the comments, default is 2. 0 is for no limit  */
-  mentionsLimit?: number,
 
   /** Start showing Countdown counter from and below a certain number (including) */
   showCounterAt: number,
@@ -87,9 +75,6 @@ export type CommentInputProps = {
   /** Render the Picker list at default position, at bottom. If not you will provide your own custom styles to display it */
   renderEmojiPickerInDefaultDisplay?: boolean,
 
-  /** List of Emoji to use for Emoji Picker, matching the Emoji Type */
-  emojis?: Emoji[],
-
   /** Render Authenticated User Avatar in needed. */
   renderAvatar?: React.ReactNode,
 
@@ -111,20 +96,11 @@ export type CommentInputProps = {
   /** Should the submit button be disabled no matter what? */
   forceDisableSubmitButton?: boolean,
 
-  /** Bottom line color for personalisation to match the Application theme */
-  lineColor?: string,
-
-  /** Color to highlight the tag for mentioned users */
-  tagColor?: string,
-
   /** Color of icon that open the Mentions list */
   atIconColor?: string,
 
   /** Color of icon that open the Mentions list */
   emojiIconColor?: string,
-
-  /** A Class Module to provide to override some classes of the default Class Modules */
-  moduleClasses?: { [key : string] : any },
 
   /** Callback when the Emoji Picker is open */
   onEmojiOpen?() : void,
@@ -137,9 +113,6 @@ export type CommentInputProps = {
 
   /** Callback when the Mentions list is close */
   onMentionsClose?() : void,
-
-  /** Callback when content is submitted */
-  onSend(content: string) : void,
 };
 
 const colors = { one: '#358856', two: '#fbbf07', three: '#cc701e', four: '#e82c2f' };
@@ -149,6 +122,8 @@ export default function CommentInput(props : CommentInputProps) {
     users = [],
     minLength = 1,
     maxLength = 0,
+    initialValue = '',
+    initialMentionedUsers = [],
     showCounterAt = 30,
     textProgressColors = colors,
     blockInputOnMaxLength = false,
@@ -173,6 +148,7 @@ export default function CommentInput(props : CommentInputProps) {
     onEmojiClose = () => {},
     onMentionsOpen = () => {},
     onMentionsClose = () => {},
+    onContentChange,
     onSend = () => {},
   } = props;
 
@@ -184,13 +160,9 @@ export default function CommentInput(props : CommentInputProps) {
   const [enableSubmit, setEnableSubmit] = React.useState<boolean>(false);
   const [showEmoji, setShowEmoji] = React.useState<boolean>(false);
   const [emoji, setEmoji] = React.useState<string>();
-  const [textLength, setTextLength] = React.useState<number>(0);
+  // sending mechanism is a way to tell CoreInput to throw out the content for for
+  const [content, setContent] = React.useState<string>(initialValue);
   const [sending, setSending] = React.useState<boolean>(false);
-
-  const handleSend = (content: string) => {
-    setSending(false);
-    onSend(content);
-  }
 
   let mentionView : ReactNode;
   let atView : ReactNode;
@@ -198,7 +170,7 @@ export default function CommentInput(props : CommentInputProps) {
     mentionView = renderMentions({
       users: mentionUsers,
       onMentionSelected: (id : number | string) => {
-        const usr = mentionUsers.filter(u => u.id === id)[0];
+        const usr : User = mentionUsers.filter(u => u.id === id)[0];
         setMentionedUser(usr);
       },
       onClose: () => {
@@ -259,10 +231,10 @@ export default function CommentInput(props : CommentInputProps) {
   }
 
   // Calculations for text and color progress, submit button status
-  const charsRemained = maxLength - textLength;
+  const charsRemained = maxLength - content.length;
   const submitDisabled = forceDisableSubmitButton || !enableSubmit || charsRemained < 0;
 
-  const percent = Math.floor(100 * (textLength / maxLength));
+  const percent = Math.floor(100 * (content.length / maxLength));
   let progressColor;
   if (percent >= 100) {
     progressColor = textProgressColors.four;
@@ -290,6 +262,8 @@ export default function CommentInput(props : CommentInputProps) {
             users={renderMentions ? users : []}
             minLength={minLength}
             maxLength={blockInputOnMaxLength ? maxLength : 0 }
+            initialValue={initialValue}
+            initialMentionedUsers={initialMentionedUsers}
             mentionsLimit={mentionsLimit}
             lineColor={lineColor}
             tagColor={tagColor}
@@ -304,9 +278,17 @@ export default function CommentInput(props : CommentInputProps) {
               setMentionedIds(ids);
             }}
             onValidationChange={(val: boolean) => setEnableSubmit(val)}
-            onLengthChange={(length: number) => setTextLength(length)}
+            onContentChange={(cnt: string) => {
+              if (onContentChange) {
+                onContentChange(cnt);
+              }
+              setContent(cnt);
+            }}
             sending={sending}
-            onSend={handleSend}
+            onSend={(cnt: string) => {
+              setSending(false);
+              onSend(cnt);
+            }}
           />
 
           <div className={classes.editableTools}>
@@ -377,7 +359,15 @@ export default function CommentInput(props : CommentInputProps) {
 
               <div
                 id="submit-wrapper"
-                onClick={() => setSending(true)}
+                onClick={() => {
+                  if (onContentChange) {
+                    // content is already available in State
+                    onSend(content);
+                  } else {
+                    // content will be sent back after passing sending state to true
+                    setSending(true);
+                  }
+                }}
               >
                 {renderSubmitButton ? (
                   renderSubmitButton
