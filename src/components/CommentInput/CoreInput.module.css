@@ -1,0 +1,16 @@
+.editableContainer {
+  padding: 2px;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid #ccc;
+}
+.input {
+  padding: 0;
+  max-height: 300px;
+  width: 100%;
+  min-height: 24px;
+  line-height: 24px;
+  display: inline-block;
+  overflow-y: auto;
+  outline: 0px solid transparent;
+};

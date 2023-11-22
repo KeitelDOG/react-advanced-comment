@@ -1,0 +1,17 @@
+.tabItems {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-bottom: 1px solid #ddd;
+}
+.tabItem {
+  display: flex;
+  flex: 1;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+}
+.activeTabItem {
+  top: 1;
+  border-bottom: 3px solid #aaa;
+};
