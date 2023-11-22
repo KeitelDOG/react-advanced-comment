@@ -25,8 +25,10 @@ type CommentInputProps = BaseInputProps & {
   /** authenticated user info if any */
   auth?: User,
 
-  /** Start showing Countdown counter from and below a certain number (including) */
-  showCounterAt: number,
+  /** Start showing Countdown counter from and below a certain number (including)
+   * @default 30
+   */
+  showCounterAt?: number,
 
   /** 4 colors to vary the color of the text length progression */
   textProgressColors?: { [key in 'one' | 'two' | 'three' | 'four']: string },
@@ -38,7 +40,7 @@ type CommentInputProps = BaseInputProps & {
    * Render the User mention list if needed. You can use internal Mentions component, or use your own component. Usage:
    * ```
    * <CommentInput
-   *   renderMentions={({ users, onMenionSelected, onClose }) => (
+   *   renderMentions={({ users, onMentionSelected, onClose }) => (
    *     <Mentions
    *       users={users}
    *       onClose={onClose}
@@ -75,17 +77,18 @@ type CommentInputProps = BaseInputProps & {
   /** Render the Picker list at default position, at bottom. If not you will provide your own custom styles to display it */
   renderEmojiPickerInDefaultDisplay?: boolean,
 
-  /** Render Authenticated User Avatar in needed. */
-  renderAvatar?: React.ReactNode,
+  /** Component for Authenticated User Avatar in needed. */
+  // renderAvatar?: React.ReactNode,
+  AvatarComponent?: () => React.JSX.Element,
 
   /** Render the Icon responsible to open the EmojiPicker if needed. An Icon is rendered by default. */
-  renderEmojiIcon?: React.ReactNode,
+  EmojiIconComponent? : () => React.JSX.Element,
 
-  /** Render the Icon responsible to open the Mentions list if needed. An Icon is rendered by default. */
-  renderAtIcon?: React.ReactNode,
+  /** Component for icon responsible to open the Mentions list if needed. An Icon is rendered by default. */
+  AtIconComponent? : () => React.JSX.Element,
 
-  /** Render a Submit Button Avatar in needed. A button is rendered by default */
-  renderSubmitButton?: React.ReactNode,
+  /** Component for the Submit Button. A button is rendered by default */
+  renderSubmitButton? : () => React.JSX.Element,
 
   /** Custom Text that should appear in Submit Button. Default: 'Send' */
   submitButtonText?: string,
@@ -132,9 +135,9 @@ export default function CommentInput(props : CommentInputProps) {
     renderEmojiPicker,
     renderMentionsInDefaultPosition = false,
     renderEmojiPickerInDefaultDisplay = false,
-    renderAvatar,
-    renderEmojiIcon,
-    renderAtIcon,
+    AvatarComponent,
+    EmojiIconComponent,
+    AtIconComponent,
     renderSubmitButton,
     submitButtonText = 'Send',
     submitButtonColor = colors.one,
@@ -180,8 +183,8 @@ export default function CommentInput(props : CommentInputProps) {
       }
     });
 
-    if (renderAtIcon) {
-      atView = renderAtIcon;
+    if (AtIconComponent) {
+      atView = <AtIconComponent />;
     } else {
       atView = (
         <AtIcon
@@ -214,8 +217,8 @@ export default function CommentInput(props : CommentInputProps) {
       },
     });
 
-    if (renderEmojiIcon) {
-      emoticonView = renderEmojiIcon;
+    if (EmojiIconComponent) {
+      emoticonView = <EmojiIconComponent />;
     } else {
       emoticonView = (
         <EmojiIcon height={24} width={24} fill={emojiIconColor} />
@@ -251,7 +254,7 @@ export default function CommentInput(props : CommentInputProps) {
     <div id="react-advanced-comment">
       <div className={classes.userInputComment}>
         <div className={classes.authWrapper}>
-          {renderAvatar}
+          {AvatarComponent && <AvatarComponent/>}
         </div>
 
         <div className={classes.inputWrapper} style={{ borderColor: lineColor }}>

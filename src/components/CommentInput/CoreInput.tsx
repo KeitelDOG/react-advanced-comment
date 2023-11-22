@@ -5,54 +5,67 @@ import { User } from '../Mentions/Mentions';
 import helper, { ContentPart } from './helper';
 
 export type BaseInputProps = {
-  /** Array of users to match against @ mention and filter while typing */
+  /** Array of users to match against @ mention and filter while typing.
+   * @default []
+   */
   users?: User[],
 
-  /** Minimum characters allowing to send the comment. Default is 0. */
+  /** Minimum characters allowing to validate the input.
+   * @default 1
+   */
   minLength?: number,
 
-  /** Maximum characters before blocking the input. Default is 0 for no limit */
+  /** Maximum characters allowing to validate and block the input. 0 for no limit.
+   * @default 0
+  */
   maxLength?: number,
 
-  /** Pass an initial text value in the input to be displayed.
-   * Useful if User want to Edit a comment. By default, pass
+  /** Pass an initial text value in the input to be displayed. Useful if User want to Edit a comment.
+   * @default
    */
   initialValue?: string,
 
-  /** Initial list of Users mentioned in the initial value. Only use with initialValue prop if it contains Users */
+  /** Initial list of Users mentioned in the initial value. Only use with initialValue prop if it contains Users.
+   * @default []
+  */
   initialMentionedUsers?: User[],
 
-  /** How many users can be mentioned in the comments, default is 2. 0 is for no limit  */
+  /** How many users can be mentioned in the comments. 0 is for no limit.
+   * @default 2
+  */
   mentionsLimit?: number,
 
-  /** Bottom line color for personalisation to match the Application theme */
+  /** Bottom line color for personalisation to match your Application theme.
+   * @default #ccc (css)
+  */
   lineColor?: string,
 
-  /** Color to highlight the tag for mentioned users */
+  /** Color to highlight the tag for mentioned users.
+   * @default #358856
+  */
   tagColor?: string,
 
-  /** A Class Module to provide to override some classes of the default Class Modules */
+  /** A Class Module to provide to override some classes of the default Class Modules.
+   * @default (css module)
+  */
   moduleClasses?: { [key : string] : any },
 
-  /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any
+  /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any.
    *
-   * N.B. **A Default RegExp is already provided**
+   *  N.B. **A Default RegExp is already provided**
+   * @default /{{[0-9]*}}/m,
    */
   mentionParseRegex?: RegExp,
 
   /** Implementation to convert mention tag to unique string that identifies the user in the comment.
    *
-   * N.B. **A Default Implementation is already provided**
+   *  N.B. **A Default Implementation is already provided**.
    *
-   * It is important to transform each tag in string to make the counting in total text length.
-   * For example, if User(10) is Keitel Jovin:
+   *  It is important to transform each tag in string to make the counting in total text length. For example, if User(10) is Keitel Jovin:
    *
-   * `<div>Hello <span data-id="10">Keitel Jovin</span>` will be transfom to "Hello {{10}}".
+   * `<div>Hello <span data-id="10">Keitel Jovin</span>` will be transfom to "Hello {{10}}". with `mentionToString(10); // => {{10}}`
    *
-   * with `mentionToString(10); // => {{10}}`
-   *
-   * And "Hello {{10}}" will be only 12 chars, instead of 18 chars in "Hello Keitel Jovin" provided by the HTML Div input.
-   * An example of algorithm:
+   *  And "Hello {{10}}" will be only 12 chars, instead of 18 chars in "Hello Keitel Jovin" provided by the HTML Div input. An example of algorithm:
    * ```
    * mentionToString = (id: number | string) : string => {
    *   return `{{${id}}}`;
@@ -63,15 +76,10 @@ export type BaseInputProps = {
 
   /** Implementation to parse the mention string to ID value.
    *
-   * N.B. **A Default Implementation is already provided**
+   *  N.B. **A Default Implementation is already provided**.
    *
-   * When editing, an initial value can be passed.
-   * If that value contains mentions, like:
-   * `Hello {{10}} and {{747}}.`
-   * You provide a regex like /{{[0-9]*}}/m and a match is found: {{10}}
-   *
-   * Now you need a function telling the input how to retrieve the ID in it.
-   *
+   *  When editing, an initial value can be passed. If that value contains mentions, like: `Hello {{10}} and {{747}}.`
+   *  You provide a regex like /{{[0-9]*}}/m and a match is found: {{10}}. Now you need a function to tell the input how to retrieve the ID in it.
    */
   parseMentionId?(stringWithID : string) : number | string,
 
@@ -92,9 +100,8 @@ type CoreInputProps = BaseInputProps & {
   /** Pass a User here to be added as mentioned User in the current carret position. It will call the onMentionedUserSet callback */
   mentionedUser?: User,
 
-  /** Tell the input to transform and send the content back via onSend callback.
-   * When not using onContentChange callback for typing performance, only onLengthChange is called.
-   * Therefore you can pass `sending={true}` at the end to get the content for you.
+  /** Tell the input to transform and send the content back via onSend callback. When not using onContentChange callback for typing performance, only onLengthChange is called. Therefore you can pass `sending={true}` at the end to get the content for you.
+  * @default false
   */
   sending: boolean,
 
@@ -607,6 +614,7 @@ export default function CoreInput(props: CoreInputProps) {
           const mentionTexting = matches[0].split('@').join('');
           // filter users for tag
           const filtered = users.filter(user => {
+            // compare name by removing space
             const name = user.name.split(' ').join('').toLowerCase();
             return (
               name.startsWith(mentionTexting.toLowerCase()) &&

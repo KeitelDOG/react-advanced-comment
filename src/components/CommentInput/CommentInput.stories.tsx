@@ -4,6 +4,7 @@ import CommentInput from './CommentInput';
 import Avatar from '../Avatar';
 import EmojiPicker from '../Emoji';
 import Mentions from '../Mentions';
+import Emotion from '../../svg/Emotion';
 import { RenderMentionsProps, RenderEmojiPickerProps } from './CommentInput';
 import emojis from '../../json/emoji-datasource-light.json';
 
@@ -56,11 +57,12 @@ MainCommentInput.args = {
   // atIconColor: 'blue',
   // emojiIconColor: 'blue',
   // textProgressColors: { one: 'green', two: 'orange', three: 'orange', four: 'red' },
-  renderAvatar: (
-    <Avatar user={users[0]} size={32} />
-  ),
-  // renderEmojiIcon: <ToolIcon src={emojiIcon} />,
-  // renderAtIcon: <ToolIcon src={atIcon} />,
+  // renderAvatar: (
+  //   <Avatar user={users[0]} size={32} />
+  // ),
+  AvatarComponent: () => <Avatar user={users[0]} size={32} />,
+  // EmojiIconComponent: () => <Emotion height={24} width={24} fill="red" />,
+  // AtIconComponent: () => <ToolIcon src={atIcon} />,
   renderMentions: ({ users, onMentionSelected, onClose } : RenderMentionsProps) => (
     <Mentions
       users={users}
