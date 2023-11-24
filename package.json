@@ -29,9 +29,11 @@
   "homepage": "https://github.com/KeitelDOG/react-advanced-comment#readme",
   "scripts": {
     "rollup": "rimraf dist && rollup -c",
-    "test": "jest",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test": "jest",
+    "test:watch": "jest --watch --verbose",
+    "test:coverage": "jest --coverage"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",

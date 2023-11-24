@@ -43,10 +43,10 @@ export default function Avatar(props: AvatarProps) {
 
   return (
     <div>
-      <div title={user.name} className={classes.avatarWrapper}>
+      <div className={classes.avatarWrapper}>
         <div title={user.name}>{userView}</div>
         <div className={classes.badgeWrapper}>
-          <div className={classes.badge} ></div>
+          <div data-testid="badge" className={classes.badge} ></div>
         </div>
       </div>
     </div>

@@ -17,9 +17,9 @@
   border: 1px solid #aaa;
 }
 .usersContainer {
+  margin: 0;
+  padding: 0;
   height: 130px;
-  display: flex;
-  flex-direction: column;
   overflow-x: hidden;
   overflow-y: auto;
 }

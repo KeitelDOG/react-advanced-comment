@@ -7,11 +7,7 @@ import Mentions from '../Mentions';
 import Emotion from '../../svg/Emotion';
 import { RenderMentionsProps, RenderEmojiPickerProps } from './CommentInput';
 import emojis from '../../json/emoji-datasource-light.json';
-
-import keitelPic from '../../pics/keitel.jpg';
-import julioPic from '../../pics/julio.jpg';
-import jetroPic from '../../pics/jetro.jpg';
-import djasonPic from '../../pics/djason.jpg';
+import users from '../../data/users';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -28,14 +24,6 @@ const Template: StoryFn<typeof CommentInput> = (args) => {
     </div>
   );
 };
-
-const users = [
-  { id: 1, name: 'Keitel Jovin', image: keitelPic },
-  { id: 2, name: 'KeitelDOG', image: keitelPic },
-  { id: 3, name: 'Julio Fils', image: julioPic },
-  { id: 4, name: 'Jetro Joseph', image: jetroPic },
-  { id: 5, name: 'Djason Sylvaince', image: djasonPic },
-];
 
 const initialValue = `Hello {{2}} well said 😃.
 

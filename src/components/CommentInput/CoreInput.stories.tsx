@@ -1,9 +1,9 @@
 import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
 import CoreInput from './CoreInput';
-import { User } from '../Mentions/index.types';
-import keitelPic from '../../pics/keitel.jpg';
-import julioPic from '../../pics/julio.jpg';
+import { User } from '../Mentions/Mentions';
+import users from '../../data/users';
+
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -21,15 +21,10 @@ const Template: StoryFn<typeof CoreInput> = (args) => {
   );
 };
 
-const users = [
-  { id: 1, name: 'KeitelDOG', image: keitelPic },
-  { id: 2, name: 'Julio Fils', image: julioPic },
-];
-
 export const MainCoreInput = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 MainCoreInput.args = {
-  users,
+  users: users.slice(1),
   mentionsLimit: 2,
   onEmojiSet: () => { console.log('emoji set') },
   onMentionedUserSet: () => { console.log('mentioned user set') },
