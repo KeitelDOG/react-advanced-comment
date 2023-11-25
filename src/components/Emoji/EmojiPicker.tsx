@@ -4,12 +4,10 @@ import EmojiTabs from './EmojiTabs';
 import EmojiCell from './EmojiCell';
 import { combineClasses } from '../helpers/combineClasses';
 import getCategories from './emojiCategories';
-import EmojiTabIcon from './EmojiTabIcon';
 import defaultClasses from './EmojiPicker.module.css';
 import Magnify from '../../svg/Magnify';
 import Close from '../../svg/Close';
 import { CategoryName } from './emojiCategories';
-import { User } from '../Mentions/Mentions';
 import { EmojiCellProps } from './EmojiCell';
 
 export type Category = {
@@ -42,13 +40,28 @@ export type EmojiPickerProps = {
   /** Pass recent emojis to automatically load them into history of recently used emoji */
   recentEmojis?: Emoji[],
 
-  /** Which emoji category to load initially */
+  /** Which emoji category to load initially
+   * @default emotion
+  */
   initialCategory?: CategoryName,
+
+  /** Custom category icons to render */
+  categoryIcons?: { [key in CategoryName] : () => React.JSX.Element },
+
+  /** Whether to render a close icon or not.
+   * @default true
+   */
+  renderClose?: boolean,
+
+  /** Render the Icon responsible to close the EmojiPicker if needed. An Icon is rendered by default if renderClose is true. */
+  CloseIconComponent?: () => React.JSX.Element,
 
   /** Set height for Emoji Picker container. You can leave it blank and set height in an outside container. */
   height?: number,
 
-  /** Number of column to display Emojis in grid */
+  /** Number of column to display Emojis in grid
+   * @default 8
+  */
   numColumns?: number,
 
    /** A Class Module to provide to override some classes of the default Class Modules */
@@ -121,6 +134,9 @@ export default function EmojiPicker(props : EmojiPickerProps) {
   const {
     emojis = [],
     initialCategory = 'emotion',
+    categoryIcons,
+    renderClose = true,
+    CloseIconComponent,
     height,
     numColumns = 8,
     moduleClasses,
@@ -291,14 +307,20 @@ export default function EmojiPicker(props : EmojiPickerProps) {
           </span>
         </div>
 
-        <div className={classes.closeIcon} onClick={onClose}>
-          <Close height={18} with={18} color="#aaa"/>
-        </div>
+        {renderClose && (
+          <div className={classes.closeIcon} onClick={onClose}>
+            {CloseIconComponent ? (
+              <CloseIconComponent />
+            ) : (
+            <Close height={18} with={18} color="#aaa"/>
+            )}
+          </div>
+        )}
       </div>
       <EmojiTabs
         categories={categories}
+        categoryIcons={categoryIcons}
         activeCategory={category}
-        EmojiTabIcon={EmojiTabIcon}
         onCategoryChange={cat => {
           // remove search keywords
           if (keywords) {

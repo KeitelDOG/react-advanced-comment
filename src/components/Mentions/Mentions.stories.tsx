@@ -8,6 +8,7 @@ import users from '../../data/users';
 export default {
   title: 'ReactComponentLibrary/Mentions',
   component: Mentions,
+  tags: ['autodocs'],
 } as Meta<typeof Mentions>;
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
