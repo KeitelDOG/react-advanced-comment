@@ -168,25 +168,37 @@ export default function CommentInput(props : CommentInputProps) {
   const [content, setContent] = React.useState<string>(initialValue);
   const [sending, setSending] = React.useState<boolean>(false);
 
-  let mentionView : ReactNode;
-  let atView : ReactNode;
-  if (renderMentions) {
-    mentionView = renderMentions({
-      users: mentionUsers,
-      onMentionSelected: (id : number | string) => {
-        const usr : User = mentionUsers.filter(u => u.id === id)[0];
-        setMentionedUser(usr);
-      },
-      onClose: () => {
-        setMentionUsers([]);
-        onMentionsClose();
-      }
-    });
+  const mentionView : ReactNode = React.useMemo(() => {
+    if (renderMentions) {
+      let view = renderMentions({
+        users: mentionUsers,
+        onMentionSelected: (id : number | string) => {
+          const usr : User = mentionUsers.filter(u => u.id === id)[0];
+          setMentionedUser(usr);
+        },
+        onClose: () => {
+          setMentionUsers([]);
+          onMentionsClose();
+        }
+      });
 
-    if (AtIconComponent) {
-      atView = <AtIconComponent />;
+      if (renderMentionsInDefaultPosition) {
+        view = (
+          <div className={classes.mentionsContainer}>
+            {view}
+          </div>
+        );
+      }
+
+      return view;
+    }
+  }, []);
+
+  const atView : ReactNode = React.useMemo(() => {
+    if (renderMentions && AtIconComponent) {
+      return <AtIconComponent />;
     } else {
-      atView = (
+      return (
         <AtIcon
           height={24}
           width={24}
@@ -194,45 +206,39 @@ export default function CommentInput(props : CommentInputProps) {
         />
       );
     }
-  }
+  }, [mentionedIds]);
 
-  if (renderMentionsInDefaultPosition) {
-    mentionView = (
-      <div className={classes.mentionsContainer}>
-        {mentionView}
-      </div>
-    );
-  }
+  const emojiPickerView : ReactNode = React.useMemo(() => {
+    if (renderEmojiPicker) {
+      let view = renderEmojiPicker({
+        onEmojiSelected: (emojiChar : string) => {
+          setEmoji(emojiChar);
+        },
+        onClose: () => {
+          setShowEmoji(false);
+          onEmojiClose();
+        },
+      });
 
-  let emojiPickerView : ReactNode;
-  let emoticonView : ReactNode;
-  if (renderEmojiPicker) {
-    emojiPickerView = renderEmojiPicker({
-      onEmojiSelected: (emojiChar : string) => {
-        setEmoji(emojiChar);
-      },
-      onClose: () => {
-        setShowEmoji(false);
-        onEmojiClose();
-      },
-    });
+      if (renderEmojiPickerInDefaultDisplay) {
+        view = (
+          <div className={classes.emojiPickerContainer}>
+            {view}
+          </div>
+        );
+      }
 
-    if (EmojiIconComponent) {
-      emoticonView = <EmojiIconComponent />;
-    } else {
-      emoticonView = (
-        <EmojiIcon height={24} width={24} fill={emojiIconColor} />
-      );
+      return view;
     }
-  }
+  }, []);
 
-  if (renderEmojiPickerInDefaultDisplay) {
-    emojiPickerView = (
-      <div className={classes.emojiPickerContainer}>
-        {emojiPickerView}
-      </div>
-    );
-  }
+  const emoticonView : ReactNode = React.useMemo(() => {
+    if (renderEmojiPicker && EmojiIconComponent) {
+      return <EmojiIconComponent />;
+    } else {
+     return <EmojiIcon height={24} width={24} fill={emojiIconColor} />;
+    }
+  }, []);
 
   // Calculations for text and color progress, submit button status
   const charsRemained = maxLength - textLength;
