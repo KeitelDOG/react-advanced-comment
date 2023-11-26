@@ -68,7 +68,7 @@ export default [
       copy({
         // copy json directory
         targets: [
-          { src: 'src/json/*', dest: 'dist/json' },
+          { src: 'src/json/emoji-datasource-light.json', dest: 'dist/json' },
         ]
       })
     ),
