@@ -7,7 +7,6 @@
     "jsx": "react",
     "module": "ESNext",
     "declaration": true,
-    "declarationDir": "dir/esm",
     "sourceMap": true,
     // "outDir": "dist",
     "moduleResolution": "node",
@@ -20,8 +19,6 @@
     "dist",
     "node_modules",
     "src/**/*.test.tsx",
-    "src/**/*.stories.tsx",
-    "src/stories",
-    "src/data",
+    "__mocks__"
   ]
 }
