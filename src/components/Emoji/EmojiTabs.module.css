@@ -5,13 +5,19 @@
   border-bottom: 1px solid #ddd;
 }
 .tabItem {
+  position: relative;
   display: flex;
   flex: 1;
   height: 40px;
   justify-content: center;
   align-items: center;
+  border: none;
+  cursor: pointer;
 }
 .activeTabItem {
-  top: 1;
-  border-bottom: 3px solid #aaa;
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  height: 2px;
+  width: 100%;
 };

@@ -2,6 +2,7 @@
 
 // accessibility names
 // https://russmaxdesign.github.io/html-elements-names/
+// aria: Accessible Rich Internet Applications
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';

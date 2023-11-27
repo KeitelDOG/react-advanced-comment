@@ -19,7 +19,7 @@ describe('Mentions', () => {
 
   test('should render SVG for closing', () => {
     render(comp);
-    screen.getByRole('img', { name: 'close icon' });
+    screen.getByRole('sgvRoot', { name: 'close icon' });
   });
 
   test('should call onMentionSelected when first User is clicked', () => {

@@ -1,17 +1,16 @@
+// https://www.w3.org/TR/2017/NOTE-wai-aria-practices-1.1-20171214/examples/tabs/tabs-2/tabs.html
 
-
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { combineClasses } from '../helpers/combineClasses';
 import defaultClasses from './EmojiTabs.module.css';
 import { Categories, Category } from './EmojiPicker';
-import EmojiTabIcon from './EmojiTabIcon';
 import { CategoryName } from './emojiCategories';
 
 export type EmojiTabsProps = {
   categories: Categories,
   activeCategory: Category,
   /** Custom category icons to render */
-  categoryIcons?: { [key in CategoryName] : () => React.JSX.Element },
+  categoryIcons?: { [key in CategoryName]? : () => React.JSX.Element },
   moduleClasses?: { [key : string] : any },
   onCategoryChange(category: Category) : void,
 }
@@ -27,46 +26,58 @@ export default function EmojiTabs(props : EmojiTabsProps) {
   const classes = combineClasses(defaultClasses, moduleClasses);
 
   return (
-    <div className={classes.tabItems}>
+    <div role="tablist" aria-label="Emoji Categories" className={classes.tabItems}>
       {Object.keys(categories).map((key: string) => {
         const cat : Category = categories[key];
         const Icon = cat.icon;
 
         // Custom icon render
-        let CustomIcon: () => React.JSX.Element;
+        let renderCustomIcon = false;
+        let CustomIcon: () => React.JSX.Element = () => <></>;
         if (categoryIcons) {
-          CustomIcon = categoryIcons[cat.id as CategoryName];
+          const ic = categoryIcons[cat.id as CategoryName];
+          if (ic) {
+            CustomIcon = ic;
+            renderCustomIcon = true;
+          }
         }
 
-        let tabStyle = {};
+        const isSelected = activeCategory.id === cat.id;
+        let tabStyle = {} as CSSProperties;
         let color = cat.color;
-        if (activeCategory.id === cat.id) {
-          tabStyle = {
-            top: 1,
-            borderBottomStyle: 'solid',
-            borderBottomWidth: 3,
-            borderBottomColor: color,
-            backgroundColor: `${color}a0`,
-          };
+        if (color.length === 4) {
+          // double the color : #aaa => #aaaaaa
+          color += color.slice(1);
         }
+        if (isSelected) {
+          tabStyle.backgroundColor = `${color}70`;
+        }
+
         return (
-          <div
+          <button
             key={`emoji-category-${key}`}
+            id={`${cat.id}-tab`}
+            role="tab"
+            aria-label={cat.name}
+            aria-selected={isSelected}
+            aria-controls={`${cat.id}-tabpanel`}
             className={classes.tabItem}
             style={tabStyle}
+            onClick={() => onCategoryChange(cat)}
           >
-            <EmojiTabIcon
-              category={cat}
-              Presentation={() => {
-                if (CustomIcon) {
-                  return <CustomIcon />
-                } else {
-                  return <Icon height={24} width={24} color={cat.color} />
-                }
-              }}
-              onClick={() => onCategoryChange(cat)}
-            />
-          </div>
+            {renderCustomIcon ? (
+              <CustomIcon />
+            ) : (
+              <Icon height={24} width={24} color={cat.color} />
+            )}
+
+            {isSelected && (
+              <div
+                style={tabStyle}
+                className={classes.activeTabItem}
+              />
+            )}
+          </button>
         );
       })}
     </div>

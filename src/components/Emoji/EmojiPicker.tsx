@@ -334,6 +334,9 @@ export default function EmojiPicker(props : EmojiPickerProps) {
       />
       <div
         ref={emojiListRef}
+        id={`${category.id}-tabpanel`}
+        role="tabpanel"
+        role-aria-labelledby={`${category.id}-tab`}
         className={classes.emojiContainer}
         style={{ gridTemplateColumns: 'auto '.repeat(numColumns) }}
       >
