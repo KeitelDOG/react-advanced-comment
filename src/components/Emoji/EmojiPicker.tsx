@@ -284,6 +284,7 @@ export default function EmojiPicker(props : EmojiPickerProps) {
 
   return (
     <div
+      data-testid="emoji-picker-container"
       className={classes.emojiPicker}
       style={{ height }}
     >
@@ -336,7 +337,7 @@ export default function EmojiPicker(props : EmojiPickerProps) {
         ref={emojiListRef}
         id={`${category.id}-tabpanel`}
         role="tabpanel"
-        role-aria-labelledby={`${category.id}-tab`}
+        aria-labelledby={`${category.id}-tab`}
         className={classes.emojiContainer}
         style={{ gridTemplateColumns: 'auto '.repeat(numColumns) }}
       >
