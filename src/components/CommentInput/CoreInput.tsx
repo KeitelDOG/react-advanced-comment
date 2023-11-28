@@ -103,7 +103,7 @@ type CoreInputProps = BaseInputProps & {
   /** Tell the input to transform and send the content back via onSend callback. When not using onContentChange callback for typing performance, only onLengthChange is called. Therefore you can pass `sending={true}` at the end to get the content for you.
   * @default false
   */
-  sending: boolean,
+  sending?: boolean,
 
   /** Callback when the passed Emoji string has been inserted */
   onEmojiSet() : void,
@@ -172,13 +172,23 @@ export default function CoreInput(props: CoreInputProps) {
 
   const classes = combineClasses(defaultClasses, moduleClasses);
 
-  // Save caret Position because we lose it when using Emoji and Mention selectors
-  const [caret, setCaret] = React.useState<Caret>();
   // set editable
   const [initialized, setInitialized] = React.useState(false);
 
   const ref = React.useRef<HTMLDivElement>(null);
 
+  const getCaretValue = () => {
+    const editable: HTMLDivElement = ref.current as HTMLDivElement;
+    const start = parseInt(editable.getAttribute('data-caretstart') as string) || 0;
+    const end = parseInt(editable.getAttribute('data-caretend') as string) || 0;
+    return { start, end };
+  }
+  const setCaretValue = (crt: Caret) => {
+    // Save caret Position because we lose it when using Emoji and Mention selectors
+    const editable: HTMLDivElement = ref.current as HTMLDivElement;
+    editable.setAttribute('data-caretstart', crt.start.toString());
+    const end = editable.setAttribute('data-caretend', crt.end.toString());
+  }
   const handleContentChange = () : void => {
     // handle content change
     const content: string = getContent();
@@ -205,6 +215,9 @@ export default function CoreInput(props: CoreInputProps) {
     // tag.setAttribute('contenteditable', false);
     // add data-id to tagged user
     tag.setAttribute('data-id', user.id.toString());
+    // accessibility for reference (mark)
+    tag.setAttribute('role', 'mark');
+    tag.setAttribute('aria-label', `${user.name} mentioned`);
     tag.style.color = tagColor;
     tag.style.fontWeight = 'bold';
     tag.textContent = user.name;
@@ -404,39 +417,36 @@ export default function CoreInput(props: CoreInputProps) {
     });
   };
 
-  const getNodeIndexAndChildPos = React.useCallback(
-    (match? : string) => {
-      const editable: HTMLDivElement = ref.current as HTMLDivElement;
-      const crt = getCaretPosition();
-      let childPos = crt.start;
-      let nodeIndex = 0;
+  const getNodeIndexAndChildPos = (match? : string) => {
+    const editable: HTMLDivElement = ref.current as HTMLDivElement;
+    const crt = getCaretPosition();
+    let childPos = crt.start;
+    let nodeIndex = 0;
 
-      for (let i = 0; i < editable.childNodes.length; i++) {
-        const node = editable.childNodes[i];
-        // div can contain text and span for example
-        // <div>Hello <span>World</span> coders!</div>
+    for (let i = 0; i < editable.childNodes.length; i++) {
+      const node = editable.childNodes[i];
+      // div can contain text and span for example
+      // <div>Hello <span>World</span> coders!</div>
 
-        // if there is a match, then automatically use current positions
-        if (
-          node.nodeName === '#text' &&
-          match &&
-          (node.textContent as string).includes(match)
-        ) {
-          nodeIndex = i;
-          break;
-        }
-
-        if (childPos <= (node.textContent as string).length) {
-          nodeIndex = i;
-          break;
-        }
-        childPos -= (node.textContent as string).length;
+      // if there is a match, then automatically use current positions
+      if (
+        node.nodeName === '#text' &&
+        match &&
+        (node.textContent as string).includes(match)
+      ) {
+        nodeIndex = i;
+        break;
       }
 
-      return [nodeIndex, childPos];
-    },
-    [getCaretPosition],
-  );
+      if (childPos <= (node.textContent as string).length) {
+        nodeIndex = i;
+        break;
+      }
+      childPos -= (node.textContent as string).length;
+    }
+
+    return [nodeIndex, childPos];
+  };
 
   const getMentionedIds = () : (number | string)[] => {
     const editable: HTMLDivElement = ref.current as HTMLDivElement;
@@ -465,8 +475,10 @@ export default function CoreInput(props: CoreInputProps) {
         if (index !== editable.childNodes.length - 1) {
           return '\n';
         }
+      } else if ((node.textContent as string).includes(NBSP)) {
+        return (node.textContent as string)?.split(NBSP).join(' ');
       }
-      return node.textContent;
+      return node.textContent
     });
 
     return contents.join('');
@@ -536,7 +548,7 @@ export default function CoreInput(props: CoreInputProps) {
         }
 
         const val = (event.target as HTMLDivElement).textContent;
-        if (val && maxLength > 0 && val.length > maxLength) {
+        if (val && maxLength > 0 && val.length >= maxLength) {
           // BREAK AND STOP
           event.preventDefault();
           return false;
@@ -547,7 +559,7 @@ export default function CoreInput(props: CoreInputProps) {
       // ON CLICK ----
       const onClick = () => {
         const crt = getCaretPosition();
-        setCaret(crt);
+        setCaretValue(crt);
       };
       editable.addEventListener('click', onClick);
 
@@ -557,7 +569,7 @@ export default function CoreInput(props: CoreInputProps) {
         handleContentChange();
 
         const crt = getCaretPosition();
-        setCaret(crt);
+        setCaretValue(crt);
 
         // CHECK if SPAN mention tag is edited. If yes, delete it
         var sel = window.getSelection();
@@ -646,7 +658,6 @@ export default function CoreInput(props: CoreInputProps) {
     If the startNode is a Node of type Text, Comment, or CDataSection, then startOffset is the number of characters from the start of startNode. For other Node types, startOffset is the number of child nodes between the start of the startNode.
     */
     const editable: HTMLDivElement = ref.current as HTMLDivElement;
-
     if (mentionedUser) {
       editable.focus();
 
@@ -663,6 +674,7 @@ export default function CoreInput(props: CoreInputProps) {
       }
 
       // put caret back
+      const caret = getCaretValue();
       if (caret) {
         setCaretPosition(caret);
       }
@@ -759,19 +771,12 @@ export default function CoreInput(props: CoreInputProps) {
       onMentionedUsersUpdate(ids);
 
       const newCrt = getCaretPosition();
-      setCaret(newCrt);
+      setCaretValue(newCrt);
 
       // update content
       handleContentChange();
     }
-  }, [
-    mentionedUser,
-    getCaretPosition,
-    getNodeIndexAndChildPos,
-    compactEditableNodes,
-    caret,
-    setCaretPosition,
-  ]);
+  }, [mentionedUser]);
 
   React.useEffect(() => {
     const editable: HTMLDivElement = ref.current as HTMLDivElement;
@@ -783,6 +788,7 @@ export default function CoreInput(props: CoreInputProps) {
         editable.append('');
       }
       // put caret back
+      const caret = getCaretValue();
       if (caret) {
         setCaretPosition(caret);
       }
@@ -826,19 +832,12 @@ export default function CoreInput(props: CoreInputProps) {
       }
       onEmojiSet();
       const newCrt = getCaretPosition();
-      setCaret(newCrt);
+      setCaretValue(newCrt);
 
       // update content
       handleContentChange();
     }
-  }, [
-    emoji,
-    setCaretPosition,
-    caret,
-    getCaretPosition,
-    getNodeIndexAndChildPos,
-    compactEditableNodes,
-  ]);
+  }, [emoji]);
 
   useEffect(() => {
     if (sending) {
@@ -848,8 +847,17 @@ export default function CoreInput(props: CoreInputProps) {
   }, [sending]);
 
   return (
-    <div id="core-input" className={classes.editableContainer} style={{ borderBottomColor: lineColor }}>
-      <div data-test-id="text-input-web" ref={ref} className={classes.input} />
+    <div data-testid="core-input-container" className={classes.editableContainer} style={{ borderBottomColor: lineColor }}>
+      <div
+        ref={ref}
+        role="textbox"
+        aria-label="advanced comment input"
+        aria-readonly="false"
+        tabIndex={0}
+        data-caretstart="0"
+        data-caretend="0"
+        className={classes.input}
+      />
     </div>
   );
 }

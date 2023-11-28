@@ -79,5 +79,8 @@
   },
   "peerDependencies": {
     "react": "^17.0.2"
+  },
+  "dependencies": {
+    "@testing-library/user-event": "^14.5.1"
   }
 }

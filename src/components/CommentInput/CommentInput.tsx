@@ -75,7 +75,7 @@ type CommentInputProps = BaseInputProps & {
   renderMentionsInDefaultPosition?: boolean,
 
   /** Render the Picker list at default position, at bottom. If not you will provide your own custom styles to display it */
-  renderEmojiPickerInDefaultDisplay?: boolean,
+  renderEmojiPickerInDefaultPosition?: boolean,
 
   /** Component for Authenticated User Avatar in needed. */
   // renderAvatar?: React.ReactNode,
@@ -134,7 +134,7 @@ export default function CommentInput(props : CommentInputProps) {
     renderMentions,
     renderEmojiPicker,
     renderMentionsInDefaultPosition = false,
-    renderEmojiPickerInDefaultDisplay = false,
+    renderEmojiPickerInDefaultPosition = false,
     AvatarComponent,
     EmojiIconComponent,
     AtIconComponent,
@@ -192,7 +192,7 @@ export default function CommentInput(props : CommentInputProps) {
 
       return view;
     }
-  }, []);
+  }, [mentionUsers]);
 
   const atView : ReactNode = React.useMemo(() => {
     if (renderMentions && AtIconComponent) {
@@ -220,7 +220,7 @@ export default function CommentInput(props : CommentInputProps) {
         },
       });
 
-      if (renderEmojiPickerInDefaultDisplay) {
+      if (renderEmojiPickerInDefaultPosition) {
         view = (
           <div className={classes.emojiPickerContainer}>
             {view}

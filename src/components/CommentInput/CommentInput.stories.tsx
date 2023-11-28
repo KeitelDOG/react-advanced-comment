@@ -25,9 +25,9 @@ const Template: StoryFn<typeof CommentInput> = (args) => {
   );
 };
 
-const initialValue = `Hello {{2}} well said 😃.
+const initialValue = `Hey {{2}} well done 😃.
 
-Hi {{3}} I agree with that too 👍 brother.`;
+I like the new App you made {{3}} 👍, pretty nice.`;
 
 export const MainCommentInput = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
