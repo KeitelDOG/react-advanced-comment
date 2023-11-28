@@ -36,7 +36,7 @@ export type BaseInputProps = {
   mentionsLimit?: number,
 
   /** Bottom line color for personalisation to match your Application theme.
-   * @default #ccc (css)
+   * @default #ccc in css
   */
   lineColor?: string,
 
@@ -46,14 +46,14 @@ export type BaseInputProps = {
   tagColor?: string,
 
   /** A Class Module to provide to override some classes of the default Class Modules.
-   * @default (css module)
+   * @default css module
   */
   moduleClasses?: { [key : string] : any },
 
-  /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any.
+  /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively.
    *
    *  N.B. **A Default RegExp is already provided**
-   * @default /{{[0-9]*}}/m,
+   * @default '/{{[0-9]*}}/m',
    */
   mentionParseRegex?: RegExp,
 

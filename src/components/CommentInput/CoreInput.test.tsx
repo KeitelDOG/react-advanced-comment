@@ -6,7 +6,7 @@ import CoreInput from './CoreInput';
 import users from '../../data/users';
 
 describe('CoreInput', () => {
-  const comment = `Hey {{2}} well done 😃.\n\nI like the new App you made {{3}} 👍, pretty nice.`;
+  const comment = 'Hey {{2}} well done 😃.\n\nI like the new App you made {{3}} 👍, pretty nice.';
 
   const spyEmojiSet = jest.fn();
   const spyMentionedUserSet = jest.fn();
@@ -168,7 +168,7 @@ describe('CoreInput', () => {
 
     expect(input.textContent).toContain('KeitelDOG');
     expect(input.textContent).toContain('Julio Fils');
-    // the input content shoulb be the same as the initial comment passed
+    // the input content shoul be the same as the initial comment passed
     expect(content).toBe(comment);
 
     // put caret at the end
@@ -187,5 +187,39 @@ describe('CoreInput', () => {
     // send edited comment, pass sending props to true
     rerender(<CoreInput {...props} sending={true} />);
     expect(spySend).toHaveBeenCalledWith(edited);
+  });
+
+  test('should use custom functions and regex to convert and parse mentioned user id', async () => {
+    const customComment = 'Hey [**2**] well done 😃.\n\nI like the new App you made [**3**] 👍, pretty nice.';
+
+    const mentionToString = (id: number | string) : string => {
+      return `[**${id}**]`;
+    }
+    const parseMentionId = (stringWithID: string) : number | string => {
+      const id : string = stringWithID.slice(3, -3);
+      return isNaN(parseInt(id)) ? id : Number(id);
+    }
+    const mentionParseRegex = /\[\*\*[0-9]*\*\*]/m;
+
+    let content: string = '';
+    render(
+      <CoreInput
+        {...props}
+        initialValue={customComment}
+        initialMentionedUsers={[users[1], users[2]]}
+        onContentChange={(cnt: string) => {
+          content = cnt;
+        }}
+        mentionToString={mentionToString}
+        parseMentionId={parseMentionId}
+        mentionParseRegex={mentionParseRegex}
+      />
+    );
+    const input = screen.getByRole('textbox');
+
+    expect(input.textContent).toContain('KeitelDOG');
+    expect(input.textContent).toContain('Julio Fils');
+    // the input content shoul be the same as the initial custom comment passed
+    expect(content).toBe(customComment);
   });
 });
