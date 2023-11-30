@@ -41,7 +41,7 @@ export default function Mentions(props : MentionsProps) {
           )}
         </div>
       </div>
-      <ul className={classes.usersContainer}>
+      <ul aria-label="Users to mention" className={classes.usersContainer}>
         {users.map((user, ind) => {
           return (
             <li

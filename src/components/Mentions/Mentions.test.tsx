@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-// import '@testing-library/jest-dom';
 
 import Mentions from './Mentions';
 import users from '../../data/users';
@@ -19,7 +18,7 @@ describe('Mentions', () => {
 
   test('should render SVG for closing', () => {
     render(comp);
-    screen.getByRole('sgvRoot', { name: 'close icon' });
+    screen.getByRole('svgRoot', { name: 'close' });
   });
 
   test('should call onMentionSelected when first User is clicked', () => {

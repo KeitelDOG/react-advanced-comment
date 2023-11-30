@@ -86,14 +86,14 @@ export type BaseInputProps = {
   /** Callback on each input and change to track the length of comment outside the component */
   onLengthChange?(length: number) : void,
 
-  /** Callback on each input and change to track the whole content outside the component. Might be heavy if text in huge. */
+  /** Callback on each input and change to track the whole content outside the component. Might be heavy if text is huge. */
   onContentChange?(content: string) : void,
 
   /** Callback on sending the Content back to parent */
   onSend(content: string) : void,
 }
 
-type CoreInputProps = BaseInputProps & {
+export type CoreInputProps = BaseInputProps & {
   /** Pass an Emoji string here to be added in the current carret position. It will call the onEmojiSet callback. */
   emoji?: string,
 

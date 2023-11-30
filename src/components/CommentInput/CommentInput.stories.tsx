@@ -45,7 +45,8 @@ MainCommentInput.args = {
   // atIconColor: 'blue',
   // emojiIconColor: 'blue',
   // textProgressColors: { one: 'green', two: 'orange', three: 'orange', four: 'red' },
-  // renderAvatar: (
+  textProgressType: 'circle',
+  // AvatarComponent: (
   //   <Avatar user={users[0]} size={32} />
   // ),
   AvatarComponent: () => <Avatar user={users[0]} size={32} />,
@@ -70,6 +71,9 @@ MainCommentInput.args = {
   ),
   renderMentionsInDefaultPosition: true,
   renderEmojiPickerInDefaultPosition: true,
+  /* renderSubmitButton: ({ submitDisabled }) => (
+    <button disabled={submitDisabled}>Submit</button>
+  ), */
   onEmojiOpen: () => console.log('emoji opened'),
   onEmojiClose: () => console.log('emoji closed'),
   onMentionsOpen: () => console.log('mentions opened'),

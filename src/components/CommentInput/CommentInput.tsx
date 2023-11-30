@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { CSSProperties, ReactNode } from 'react';
 
 import CoreInput from './CoreInput';
 import { combineClasses } from '../helpers/combineClasses';
@@ -21,7 +21,7 @@ export type RenderMentionsProps = {
   onClose() : void
 };
 
-type CommentInputProps = BaseInputProps & {
+export type CommentInputProps = BaseInputProps & {
   /** authenticated user info if any */
   auth?: User,
 
@@ -32,6 +32,11 @@ type CommentInputProps = BaseInputProps & {
 
   /** 4 colors to vary the color of the text length progression */
   textProgressColors?: { [key in 'one' | 'two' | 'three' | 'four']: string },
+
+  /** Provide how to display the text Progress, circle or bar.
+   * @default bar
+  */
+  textProgressType?: 'circle' | 'bar',
 
   /** Block input from receiving new character when maxLength is reached */
   blockInputOnMaxLength?: boolean,
@@ -82,13 +87,13 @@ type CommentInputProps = BaseInputProps & {
   AvatarComponent?: () => React.JSX.Element,
 
   /** Render the Icon responsible to open the EmojiPicker if needed. An Icon is rendered by default. */
-  EmojiIconComponent? : () => React.JSX.Element,
+  EmojiIconComponent?: () => React.JSX.Element,
 
   /** Component for icon responsible to open the Mentions list if needed. An Icon is rendered by default. */
-  AtIconComponent? : () => React.JSX.Element,
+  AtIconComponent?: () => React.JSX.Element,
 
-  /** Component for the Submit Button. A button is rendered by default */
-  renderSubmitButton? : () => React.JSX.Element,
+  /** Render a custom Submit Button. A button is rendered by default */
+  renderSubmitButton?(props: { submitDisabled: boolean }) : React.ReactNode,
 
   /** Custom Text that should appear in Submit Button. Default: 'Send' */
   submitButtonText?: string,
@@ -129,6 +134,7 @@ export default function CommentInput(props : CommentInputProps) {
     initialMentionedUsers = [],
     showCounterAt = 30,
     textProgressColors = colors,
+    textProgressType = 'circle',
     blockInputOnMaxLength = false,
     mentionsLimit = 2,
     renderMentions,
@@ -147,6 +153,9 @@ export default function CommentInput(props : CommentInputProps) {
     atIconColor = '#cc701e',
     emojiIconColor = '#fbbf07',
     moduleClasses,
+    mentionParseRegex,
+    mentionToString,
+    parseMentionId,
     onEmojiOpen = () => {},
     onEmojiClose = () => {},
     onMentionsOpen = () => {},
@@ -241,8 +250,28 @@ export default function CommentInput(props : CommentInputProps) {
   }, []);
 
   // Calculations for text and color progress, submit button status
-  const charsRemained = maxLength - textLength;
+  // charsRemained remain constant if maxLength is 0 (no limit)
+  const charsRemained = maxLength <= 0 ? 0 : maxLength - textLength;
   const submitDisabled = forceDisableSubmitButton || !enableSubmit || charsRemained < 0;
+
+  const buttonView : ReactNode = React.useMemo(() => {
+    if (renderSubmitButton) {
+      return renderSubmitButton({ submitDisabled });
+    } else {
+      return (
+        <button
+          className={classes.submit}
+          style={{
+            backgroundColor: submitDisabled ? '#ccc' : submitButtonColor,
+            cursor: submitDisabled ? 'auto' : 'pointer',
+          }}
+          disabled={submitDisabled}
+        >
+          {submitButtonText}
+        </button>
+      );
+    }
+  }, [submitDisabled, submitButtonColor, submitButtonText, classes]);
 
   const percent = Math.floor(100 * (textLength / maxLength));
   let progressColor;
@@ -256,14 +285,25 @@ export default function CommentInput(props : CommentInputProps) {
     progressColor = textProgressColors.one
   }
 
+  const progressStyle: CSSProperties = {};
+  if (textProgressType === 'circle') {
+    progressStyle.background = `radial-gradient(closest-side, white 75%, transparent 85% 100%), conic-gradient(${progressColor} ${percent}%, #ddd 0)`;
+  } else if (textProgressType === 'bar') {
+    progressStyle.appearance = 'auto';
+  }
+
   return (
-    <div id="react-advanced-comment">
+    <div>
       <div className={classes.userInputComment}>
         <div className={classes.authWrapper}>
           {AvatarComponent && <AvatarComponent/>}
         </div>
 
-        <div className={classes.inputWrapper} style={{ borderColor: lineColor }}>
+        <div
+          data-testid="comment-input-container"
+          className={classes.inputWrapper}
+          style={{ borderColor: lineColor }}
+        >
           {Boolean(mentionUsers.length) && (
             mentionView
           )}
@@ -277,6 +317,9 @@ export default function CommentInput(props : CommentInputProps) {
             mentionsLimit={mentionsLimit}
             lineColor={lineColor}
             tagColor={tagColor}
+            mentionParseRegex={mentionParseRegex}
+            mentionToString={mentionToString}
+            parseMentionId={parseMentionId}
             emoji={emoji}
             mentionedUser={mentionedUser}
             onEmojiSet={() => setEmoji(undefined)}
@@ -354,12 +397,15 @@ export default function CommentInput(props : CommentInputProps) {
             <div className={classes.toolsRightSection}>
               {maxLength && (
                 <div className={classes.tool}>
-                  <div
+                  <meter
+                    role="meter"
+                    aria-label="Text Progress"
+                    min={0}
+                    high={80}
+                    max={100}
+                    value={percent}
                     className={classes.textProgress}
-                    style={{
-                      background: `radial-gradient(closest-side, white 75%, transparent 85% 100%),
-                      conic-gradient(${progressColor} ${percent}%, #ddd 0)`,
-                    }}
+                    style={progressStyle}
                   >
                     <span
                       className={classes.textCounter}
@@ -367,12 +413,11 @@ export default function CommentInput(props : CommentInputProps) {
                     >
                       {charsRemained <= showCounterAt ? charsRemained : ''}
                     </span>
-                  </div>
+                  </meter>
                 </div>
               )}
 
               <div
-                id="submit-wrapper"
                 onClick={() => {
                   if (onContentChange) {
                     // content is already available in State
@@ -383,21 +428,7 @@ export default function CommentInput(props : CommentInputProps) {
                   }
                 }}
               >
-                {renderSubmitButton ? (
-                  renderSubmitButton
-                ) : (
-                  <button
-                    data-test-id="submit-button"
-                    className={classes.submit}
-                    style={{
-                      backgroundColor: submitDisabled ? '#ccc' : submitButtonColor,
-                      cursor: submitDisabled ? 'auto' : 'pointer',
-                    }}
-                    disabled={submitDisabled}
-                  >
-                    {submitButtonText}
-                  </button>
-                )}
+                {buttonView}
               </div>
 
             </div>

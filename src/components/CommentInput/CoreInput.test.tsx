@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, act, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import CoreInput from './CoreInput';
+import CoreInput, { CoreInputProps } from './CoreInput';
 import users from '../../data/users';
 
 describe('CoreInput', () => {
@@ -17,7 +17,7 @@ describe('CoreInput', () => {
   const spyContentChange = jest.fn();
   const spySend = jest.fn();
 
-  let props = {
+  const props = {
     users,
     minLength: 2,
     maxLength: 0,
@@ -41,7 +41,7 @@ describe('CoreInput', () => {
     onLengthChange: spyLengthChange,
     onContentChange: spyContentChange,
     onSend: spySend
-  }
+  } as CoreInputProps;
 
   test('should render input with line color', () => {
     render(<CoreInput {...props} />);
@@ -215,11 +215,12 @@ describe('CoreInput', () => {
         mentionParseRegex={mentionParseRegex}
       />
     );
-    const input = screen.getByRole('textbox');
 
-    expect(input.textContent).toContain('KeitelDOG');
-    expect(input.textContent).toContain('Julio Fils');
-    // the input content shoul be the same as the initial custom comment passed
+    // 2 mentions should be there
+    screen.getByRole('mark', { name: `${users[1].name} mentioned`});
+    screen.getByRole('mark', { name: `${users[2].name} mentioned`});
+
+    // the input content shoulds be the same as the initial custom comment passed
     expect(content).toBe(customComment);
   });
 });

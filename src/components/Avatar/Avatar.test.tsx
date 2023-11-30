@@ -6,7 +6,6 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-// import '@testing-library/jest-dom';
 
 import Avatar from './Avatar';
 import users from '../../data/users';
@@ -27,5 +26,18 @@ describe('Avatar', () => {
     expect(img.getAttribute('alt')).toBe(users[0].name);
     expect(img.getAttribute('src')).toBe(users[0].image);
     expect(img.getAttribute('style')).toBe('height: 24px;');
+  });
+
+  test('should render default Guest Text Avatar if no user is passed', () => {
+    render(<Avatar guestName='DOG' size={24} />);
+    const guest = screen.getByLabelText('guest avatar');
+    expect(guest.textContent).toBe('DOG');
+  });
+
+  test('should render User Text Avatar if no user has no image', () => {
+    const { id, name } = users[0];
+    render(<Avatar user={{ id, name }} size={24} />);
+    const user = screen.getByLabelText(`${name} avatar`);
+    expect(user.textContent).toBe(name[0]);
   });
 });
