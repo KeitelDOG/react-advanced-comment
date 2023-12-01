@@ -11,9 +11,9 @@ import Avatar from './Avatar';
 import users from '../../data/users';
 
 describe('Avatar', () => {
-  const comp = <Avatar user={users[0]} size={24} />;
+  const comp = <Avatar user={users[0]} size={24} moduleClasses={{ badge: 'hashclass' }} />;
 
-  test('should render div and img with title', () => {
+  test('should render div and img with title and custom classes', () => {
     render(comp);
     const elems = screen.getAllByTitle(users[0].name);
     expect(elems.length).toBe(2);

@@ -79,8 +79,8 @@ describe('CommentInput', () => {
     </section>
   );
 
-  test('should render global input design', () => {
-    render(<CommentInput {...props} />);
+  test('should render global input design with custom classes', () => {
+    render(<CommentInput {...props} moduleClasses={{ inputWrapper: 'hashclass' }} />);
     // container
     const container = screen.getByTestId('comment-input-container');
     expect(container.style.borderColor).toBe('blue');

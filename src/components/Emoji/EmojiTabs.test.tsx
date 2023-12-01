@@ -24,8 +24,8 @@ describe('EmojiTabs', () => {
 
   const comp = <EmojiTabs {...props} />
 
-  test('should render the tablist', () => {
-    render(comp);
+  test('should render the tablist with custom classes', () => {
+    render(<EmojiTabs {...props} moduleClasses={{ tabItem: 'hashclass' }} />);
     screen.getByRole('tablist', { name: 'Emoji Categories' });
   });
 

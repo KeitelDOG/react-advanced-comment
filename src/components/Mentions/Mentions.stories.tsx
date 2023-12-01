@@ -19,5 +19,5 @@ export const UserMentions = Template.bind({});
 UserMentions.args = {
   users: users.slice(1),
   onClose: () => console.log('mentions closed'),
-  onMentionSelected: (user: User) => console.log('mention selected', user),
+  onMentionSelected: (id: number) => console.log('mention selected id', id),
 };

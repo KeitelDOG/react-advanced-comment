@@ -37,8 +37,8 @@ describe('EmojiPicker', () => {
     expect(dog).toBeNull();
   });
 
-  test('should apply correct height to EmojiPicker container', () => {
-    render(comp);
+  test('should apply correct height to EmojiPicker container with custom classes', () => {
+    render(<EmojiPicker {...props} moduleClasses={{ emojiPicker: 'hashclass' }} />);
     const container = screen.getByTestId('emoji-picker-container');
     expect(container.style.height).toBe('280px');
   });
@@ -84,9 +84,9 @@ describe('EmojiPicker', () => {
     expect(tabpanel.id).toBe(`${categories.emotion.id}-tabpanel`);
 
     const input = screen.getByRole('textbox', { name: 'search emoji'});
-    const typing = 'dog';
+    // search for dog
     await user.click(input);
-    await act(async() => await user.keyboard(typing));
+    await act(async() => await user.keyboard('dog'));
 
     // indexes 14 DOG FACE, 15 DOG, 16 GUIDE DOG, 17 SERVICE DOG
     for (let i = 14; i <= 17; i++) {
@@ -107,5 +107,21 @@ describe('EmojiPicker', () => {
     // it works on span
     fireEvent.mouseOut(dog);
     // expect(current.textContent).toBe('');
+  });
+
+  test('User searches for Ayiti as additional name to show Haiti flag emoji', async () => {
+    jest.spyOn(window, 'setTimeout').mockImplementation((callback) => {
+      callback();
+      return 0 as any;
+    });
+
+    const user = userEvent.setup();
+    render(comp);
+
+    const input = screen.getByRole('textbox', { name: 'search emoji'});
+    // search for Ayiti (in additional name for Haiti (23))
+    await user.click(input);
+    await act(async() => await user.keyboard('ayiti'));
+    screen.getByRole('img', { name: emojis[23].name });
   });
 });

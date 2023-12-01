@@ -13,15 +13,15 @@ DOG FACE emoji 🐶 1F436 (index 14)
 describe('EmojiCell', () => {
   const spyHover = jest.fn();
   const spySelect = jest.fn();
-  const comp = <EmojiCell emoji={emojis[23]} onHover={spyHover} onSelect={spySelect} />;
+  const comp = <EmojiCell emoji={emojis[23]} onHover={spyHover} onSelect={spySelect} moduleClasses={{ emojiText: 'hashclass' }} />;
 
   test('should render Haiti Emoji 🇭🇹', () => {
-    render(comp);
-    const emo = screen.getByText('🇭🇹');
+    render(<EmojiCell emoji={emojis[23]} onHover={spyHover} onSelect={spySelect} />);
+    screen.getByText('🇭🇹');
   });
 
   test('should call onHover when mouse goes over and out the emoji', () => {
-    render(comp);
+    render(<EmojiCell emoji={emojis[23]} onHover={spyHover} onSelect={spySelect} />);
     const span = screen.getByRole('img', { name: emojis[23].name });
 
     fireEvent.mouseOver(span);
@@ -32,7 +32,7 @@ describe('EmojiCell', () => {
   });
 
   test('should call onSelect when emoji is clicked', () => {
-    render(comp);
+    render(<EmojiCell emoji={emojis[23]} onSelect={spySelect} moduleClasses={{ emojiText: 'hashclass' }} />);
     const span = screen.getByRole('img', { name: emojis[23].name });
 
     fireEvent.click(span);

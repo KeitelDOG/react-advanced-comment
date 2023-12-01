@@ -571,25 +571,18 @@ export default function CoreInput(props: CoreInputProps) {
         const crt = getCaretPosition();
         setCaretValue(crt);
 
+        const mentionedIds = getMentionedIds();
+
         // CHECK if SPAN mention tag is edited. If yes, delete it
         var sel = window.getSelection();
-        if (
-          sel &&
-          sel.anchorNode &&
-          sel.anchorNode.parentNode
-        ) {
-          const node = sel.anchorNode.parentNode as HTMLElement;
-          if (node.hasAttribute('data-id')) {
-            // anchor will be the Text Node inside ContentEditable SPAN
-            // then anchor parent Node will be the ContentEditable SPAN
-            // take the length of the Span to update caret
-
-            let length = 0;
-            if (sel.anchorNode.textContent) {
-              length = sel.anchorNode.textContent.length;
-            }
-            const node = sel.anchorNode.parentNode;
-            editable.removeChild(node);
+        if (sel && sel.anchorNode && mentionedIds.length) {
+          // verify if caret is in position inside span mention
+          let [nodeIndex,] = getNodeIndexAndChildPos();
+          if (editable.childNodes[nodeIndex].nodeName === 'SPAN') {
+            const span = editable.childNodes[nodeIndex] as HTMLSpanElement;
+            // span mention has been edited, then delete it
+            let length = (span.textContent as string).length;
+            editable.removeChild(span);
             // compact to avoid browser engine to create
             // a FONT tag in place of deleted SPAN tag
             compactEditableNodes();
@@ -601,6 +594,8 @@ export default function CoreInput(props: CoreInputProps) {
 
             const ids = getMentionedIds();
             onMentionedUsersUpdate(ids);
+            handleContentChange();
+            return;
           }
         }
 
@@ -609,7 +604,6 @@ export default function CoreInput(props: CoreInputProps) {
         }
 
         // MENTION --
-        const mentionedIds = getMentionedIds();
         if (mentionsLimit > 0 && mentionedIds.length >= mentionsLimit) {
           // Skip after mentions limit
           return;
