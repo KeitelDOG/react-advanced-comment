@@ -1,9 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 
 import EmojiPicker from './EmojiPicker';
 import getCategories, { CategoryName } from './emojiCategories';
 import emojis from '../../json/emoji-datasource-testing.json';
+import userEvent from '@testing-library/user-event';
 
 const categories = getCategories();
 
@@ -42,7 +43,7 @@ describe('EmojiPicker', () => {
     expect(container.style.height).toBe('280px');
   });
 
-  test('should navigate to Flags category, select Haiti Flag and find it in recent History', () => {
+  test('User navigates to Flags category, select Haiti Flag and find it in recent History', () => {
     render(comp);
     // aim at the flags tab
     let fCat = categories.flags;
@@ -68,5 +69,43 @@ describe('EmojiPicker', () => {
     fireEvent.click(history);
     expect(tabpanel.id).toBe(`${hCat.id}-tabpanel`);
     screen.getByRole('img', { name: emojis[23].name });
+  });
+
+  test('User searches for Dog emojis and hover on DOG FACE', async () => {
+    jest.spyOn(window, 'setTimeout').mockImplementation((callback) => {
+      callback();
+      return 0 as any;
+    });
+
+    const user = userEvent.setup();
+    render(comp);
+    const tabpanel = screen.getByRole('tabpanel');
+    // should display the flags panel
+    expect(tabpanel.id).toBe(`${categories.emotion.id}-tabpanel`);
+
+    const input = screen.getByRole('textbox', { name: 'search emoji'});
+    const typing = 'dog';
+    await user.click(input);
+    await act(async() => await user.keyboard(typing));
+
+    // indexes 14 DOG FACE, 15 DOG, 16 GUIDE DOG, 17 SERVICE DOG
+    for (let i = 14; i <= 17; i++) {
+      screen.getByRole('img', { name: emojis[i].name });
+    }
+
+    // current emoji name is blank
+    const current = screen.getByRole('mark', { name: 'current emoji' });
+    expect(current.textContent).toBe('');
+
+    // current emoji name display DOG FACE on mouseover
+    const dog = screen.getByRole('img', { name: emojis[14].name });
+    fireEvent.mouseOver(dog);
+    expect(current.textContent).toBe(emojis[14].name.toLowerCase());
+
+    // current emoji name is blank again on mouseout
+    // TODO: MouseOut doesn't seem to work, try to use userEvent object
+    // it works on span
+    fireEvent.mouseOut(dog);
+    // expect(current.textContent).toBe('');
   });
 });

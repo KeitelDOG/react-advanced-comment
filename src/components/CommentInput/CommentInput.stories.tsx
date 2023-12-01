@@ -4,10 +4,11 @@ import CommentInput from './CommentInput';
 import Avatar from '../Avatar';
 import EmojiPicker from '../Emoji';
 import Mentions from '../Mentions';
-import Emotion from '../../svg/Emotion';
+// import Emotion from '../../svg/Emotion';
 import { RenderMentionsProps, RenderEmojiPickerProps } from './CommentInput';
 import emojis from '../../json/emoji-datasource-light.json';
 import users from '../../data/users';
+// import customCSSModule from './CommentInputCustom.module.css';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -51,7 +52,7 @@ MainCommentInput.args = {
   // ),
   AvatarComponent: () => <Avatar user={users[0]} size={32} />,
   // EmojiIconComponent: () => <Emotion height={24} width={24} fill="red" />,
-  // AtIconComponent: () => <ToolIcon src={atIcon} />,
+  // AtIconComponent: () => <img src={atIcon} />,
   renderMentions: ({ users, onMentionSelected, onClose } : RenderMentionsProps) => (
     <Mentions
       users={users}
@@ -74,6 +75,7 @@ MainCommentInput.args = {
   /* renderSubmitButton: ({ submitDisabled }) => (
     <button disabled={submitDisabled}>Submit</button>
   ), */
+  // moduleClasses: customCSSModule,
   onEmojiOpen: () => console.log('emoji opened'),
   onEmojiClose: () => console.log('emoji closed'),
   onMentionsOpen: () => console.log('mentions opened'),

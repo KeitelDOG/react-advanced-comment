@@ -46,7 +46,7 @@ describe('CoreInput', () => {
   test('should render input with line color', () => {
     render(<CoreInput {...props} />);
     // screen.debug();
-    screen.getByRole('textbox');
+    screen.getByRole('textbox', { name: 'advanced comment input' });
     // input container should have brown bottom border
     const container = screen.getByTestId('core-input-container');
     expect(container.style.borderBottomColor).toBe('blue');
@@ -54,7 +54,7 @@ describe('CoreInput', () => {
 
   test('should callback content and content length on user input', () => {
     render(<CoreInput {...props} />);
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox', { name: 'advanced comment input' });
 
     const typing = 'Hello World';
     fireEvent.input(input, {
@@ -78,11 +78,10 @@ describe('CoreInput', () => {
   test('input should block user typing once it reaches maxLength', async () => {
     const user = userEvent.setup();
     render(<CoreInput {...props} maxLength={40} />);
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox', { name: 'advanced comment input' });
 
-    // const typing = 'Hello World. Comment H';
     const typing = 'The quick brown fox jumps over the lazy dog';
-    await act(async() => await user.click(input));
+    await user.click(input);
     await act(async() => await user.keyboard(typing));
 
     // input should only contain the first 40 chars ([The ... lazy ])
@@ -99,9 +98,9 @@ describe('CoreInput', () => {
         onContentChange={(cnt : string) => content = cnt}
       />
     );
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox', { name: 'advanced comment input' });
 
-    await act(async() => await user.click(input));
+    await user.click(input);
     // 1- typing with mention match
     const typing1 = 'Hey @keit';
     await act(async() => await user.keyboard(typing1));
@@ -164,7 +163,7 @@ describe('CoreInput', () => {
         }}
       />
     );
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox', { name: 'advanced comment input' });
 
     expect(input.textContent).toContain('KeitelDOG');
     expect(input.textContent).toContain('Julio Fils');
@@ -174,7 +173,7 @@ describe('CoreInput', () => {
     // put caret at the end
     input.setAttribute('data-caretstart', '84');
     input.setAttribute('data-caretend', '84');
-    await act(async() => await user.click(input));
+    await user.click(input);
     // typing: change "...pretty nice." to "...pretty nice brother"
     await act(async() => await user.keyboard('[Backspace] brother.'));
     const edited = `${comment.slice(0, -1)} brother.`;

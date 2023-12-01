@@ -525,7 +525,7 @@ export default function CoreInput(props: CoreInputProps) {
   React.useEffect(() => {
     const editable: HTMLDivElement = ref.current as HTMLDivElement;
     // EVENT LISTENERS ARE SET ONLY ONCE
-    if (!initialized && editable) {
+    if (!initialized) {
       // plaintext-only browser support: https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable
       // editable.setAttribute('contenteditable', 'plaintext-only');
       editable.setAttribute('contenteditable', 'true');

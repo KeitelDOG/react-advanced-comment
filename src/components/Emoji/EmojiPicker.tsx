@@ -82,32 +82,6 @@ const groupedCategories = (emos : Emoji[]) => {
   }, {} as { [key: string]: Emoji[] });
 };
 
-const filterEmojis = (emojis : Emoji[]) => {
-  return emojis.reduce((acc, emo) => {
-    // skip unified that has more than 2 dashes
-    if (emo.unified.split('-').length > 3) {
-      return acc;
-    }
-    // skip recent version
-    if (Number(emo.added_in) > 12) {
-      return acc;
-    }
-
-    const emolight : Emoji = {
-      name: emo.name,
-      unified: emo.unified,
-      short_name: emo.short_name,
-      short_names: emo.short_names,
-      category: emo.category,
-      sort_order: emo.sort_order,
-      added_in: emo.added_in,
-    };
-
-    acc.push(emolight);
-    return acc;
-  }, [] as Emoji[]);
-};
-
 const sortEmojis = (emos : Emoji[]) => {
   return emos.sort((e1, e2) => e1.sort_order - e2.sort_order);
 };
@@ -252,8 +226,8 @@ export default function EmojiPicker(props : EmojiPickerProps) {
     });
   };
 
-  const onHover = (isHover: boolean, emoji: Emoji) => {
-    if (isHover) {
+  const onHover = (isHovering: boolean, emoji: Emoji) => {
+    if (isHovering) {
       setCurrentEmoji(emoji);
     } else {
       setCurrentEmoji(undefined);
@@ -294,18 +268,20 @@ export default function EmojiPicker(props : EmojiPickerProps) {
             <Magnify height={22} with={22} color="#aaa"/>
           </div>
           <input
+            role="textbox"
+            aria-label="search emoji"
+            tabIndex={0}
             className={classes.searchInput}
             placeholder="Search Emoji"
-            aria-label="search emoji"
             value={keywords}
             onChange={handleChange}
           />
         </div>
 
         <div className={classes.currentEmojiContainer}>
-          <span className={classes.currentEmoji}>
+          <mark role="mark" aria-label="current emoji" className={classes.currentEmoji}>
             {currentEmoji ? currentEmoji.name.toLowerCase() : ''}
-          </span>
+          </mark>
         </div>
 
         {renderClose && (
