@@ -548,7 +548,7 @@ export default function CoreInput(props: CoreInputProps) {
         }
 
         const val = (event.target as HTMLDivElement).textContent;
-        if (val && maxLength > 0 && val.length >= maxLength) {
+        if (val && maxLength > 0 && val.length === maxLength) {
           // BREAK AND STOP
           event.preventDefault();
           return false;
@@ -565,7 +565,7 @@ export default function CoreInput(props: CoreInputProps) {
 
       // ON INPUT ----
       const onInput = (event: Event) => {
-        const val = (event.target as HTMLDivElement).textContent;
+        const val = (event.target as HTMLDivElement).textContent as string;
         handleContentChange();
 
         const crt = getCaretPosition();
@@ -599,12 +599,8 @@ export default function CoreInput(props: CoreInputProps) {
           }
         }
 
-        if (!val) {
-          return;
-        }
-
         // MENTION --
-        if (mentionsLimit > 0 && mentionedIds.length >= mentionsLimit) {
+        if (mentionsLimit > 0 && mentionedIds.length === mentionsLimit) {
           // Skip after mentions limit
           return;
         }

@@ -49,6 +49,8 @@ describe('EmojiTabs', () => {
   });
 
   test('should render custom Icon for Tab if provided', () => {
+    // should work with color Hex 7 length
+    categories.emotion.color = '#aaaaaa';
     render(<EmojiTabs {...props} categoryIcons={cutomIcons} />);
     screen.getByRole('img', { name: 'Custom Emotion Icon' });
   });

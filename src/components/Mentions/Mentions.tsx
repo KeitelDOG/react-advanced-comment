@@ -24,9 +24,7 @@ export default function Mentions(props : MentionsProps) {
   const classes = combineClasses(defaultClasses, moduleClasses);
 
   const handleMentionSelected = (user : User) => {
-    if (typeof onMentionSelected === 'function') {
-      onMentionSelected(user.id);
-    }
+    onMentionSelected(user.id);
   };
 
   return (

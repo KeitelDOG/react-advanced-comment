@@ -80,7 +80,14 @@ describe('CommentInput', () => {
   );
 
   test('should render global input design with custom classes', () => {
-    render(<CommentInput {...props} moduleClasses={{ inputWrapper: 'hashclass' }} />);
+    render(
+      <CommentInput
+        {...props}
+        moduleClasses={{ inputWrapper: 'hashclass' }}
+        renderEmojiPicker={EmojiPicker}
+        renderMentions={Mentions}
+      />
+    );
     // container
     const container = screen.getByTestId('comment-input-container');
     expect(container.style.borderColor).toBe('blue');
@@ -119,7 +126,7 @@ describe('CommentInput', () => {
     expect(span.style.color).toBe('rgb(53, 136, 86)');
 
     // add some comment to updae progress. typing length 37
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox', { name: 'advanced comment input' });
     const typing = 'Hello World. This is a short comment.';
     fireEvent.input(input, {
       target: { textContent: typing }
@@ -146,9 +153,8 @@ describe('CommentInput', () => {
     const section = screen.getByRole('section', { name: 'Emoji Picker'});
     fireEvent.click(section);
     expect(spyEmojiClose).toHaveBeenCalled();
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox', { name: 'advanced comment input' });
     expect(input.textContent).toBe('🇭🇹');
-
   });
 
   test('user click at icon to open Mention and select KeitelDOG', () => {
@@ -207,7 +213,7 @@ describe('CommentInput', () => {
     expect(button.getAttributeNames()).toContain('disabled');
 
     // add some text
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox', { name: 'advanced comment input' });
     const typing = 'Hello World.';
     fireEvent.input(input, {
       target: { textContent: typing }
@@ -245,7 +251,58 @@ describe('CommentInput', () => {
     );
 
     // 2 mentions should be there
-    screen.getByRole('mark', { name: `${users[0].name} mentioned`});
-    screen.getByRole('mark', { name: `${users[1].name} mentioned`});
+    screen.getByRole('mark', { name: `${users[0].name} mentioned` });
+    screen.getByRole('mark', { name: `${users[1].name} mentioned` });
+  });
+
+  test('should send message whether onContentChange is set or not', () => {
+    // with onContentChange
+    const { rerender } = render(<CommentInput {...props} />);
+
+    const input = screen.getByRole('textbox', { name: 'advanced comment input' });
+    const typing = 'Hello World. A comment to send.';
+    fireEvent.input(input, {
+      target: { textContent: typing }
+    });
+
+    const submit = screen.getByRole('button', { name: 'Soumettre' });
+    fireEvent.click(submit);
+    expect(spySend).toHaveBeenCalledWith(typing);
+
+    // without onContentChange
+    rerender(<CommentInput {...props} onContentChange={undefined} />);
+
+    const typing2 = `${typing} With no onContentChange`;
+    fireEvent.input(input, {
+      target: { textContent:  typing2 }
+    });
+
+    fireEvent.click(submit);
+    expect(spySend).toHaveBeenCalledWith(typing2);
+  });
+
+  test('should close Mention when Emoji Picker opens and close Emoji Picker when Mentions open', () => {
+    // with onContentChange
+    render(
+      <CommentInput
+        {...props}
+        renderEmojiPicker={EmojiPicker}
+        renderMentions={Mentions}
+      />
+    );
+    const emoticon = screen.getByRole('svgRoot', { name: 'emoticon'});
+    const at = screen.getByRole('svgRoot', { name: 'at'});
+
+    // open emoji picker (mocked in the test)
+    fireEvent.click(emoticon);
+    screen.getByRole('section', { name: 'Emoji Picker'});
+    const mentionsClosed = screen.queryByRole('section', { name: 'Mentions'});
+    expect(mentionsClosed).toBeNull();
+
+    // open Mentions
+    fireEvent.click(at);
+    screen.getByRole('section', { name: 'Mentions' });
+    const emojiClosed = screen.queryByRole('section', { name: 'Emoji Picker'});
+    expect(emojiClosed).toBeNull();
   });
 });

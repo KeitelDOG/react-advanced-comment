@@ -43,7 +43,7 @@ describe('CoreInput', () => {
     onSend: spySend
   } as CoreInputProps;
 
-  xtest('should render input with line color and with custom classes', () => {
+  test('should render input with line color and with custom classes', () => {
     render(<CoreInput {...props} moduleClasses={{ input: 'hashclass' }} />);
     // screen.debug();
     screen.getByRole('textbox', { name: 'advanced comment input' });
@@ -52,7 +52,7 @@ describe('CoreInput', () => {
     expect(container.style.borderBottomColor).toBe('blue');
   });
 
-  xtest('should callback content and content length on user input', () => {
+  test('should callback content and content length on user input', () => {
     render(<CoreInput {...props} />);
     const input = screen.getByRole('textbox', { name: 'advanced comment input' });
 
@@ -75,7 +75,41 @@ describe('CoreInput', () => {
     expect(spyValidationChange).toHaveBeenCalledWith(true);
   });
 
-  xtest('input should block user typing once it reaches maxLength', async () => {
+  test('should not callback mention match to empty array on more than one matching', () => {
+    render(<CoreInput {...props} />);
+    const input = screen.getByRole('textbox', { name: 'advanced comment input' });
+
+    fireEvent.input(input, {
+      target: { textContent: 'Hello @keit' }
+    });
+
+    expect(spyMentionMatch).toHaveBeenCalledWith([users[0], users[1]]);
+
+    fireEvent.input(input, {
+      target: { textContent: 'Hello @keit and @julio' }
+    });
+
+    expect(spyMentionMatch).toHaveBeenCalledWith([]);
+  });
+
+  test('should not allow more than mentions limit', () => {
+    const { rerender } = render(<CoreInput {...props} mentionsLimit={2} />);
+
+    // add 2 mentions
+    rerender(<CoreInput {...props} mentionsLimit={2} mentionedUser={users[1]} />);
+    screen.getByRole('mark', { name: `${users[1].name} mentioned` });
+
+    rerender(<CoreInput {...props} mentionsLimit={2} mentionedUser={users[2]} />);
+    screen.getByRole('mark', { name: `${users[2].name} mentioned` });
+
+    // 3rd one should fail
+    rerender(<CoreInput {...props} mentionsLimit={2} mentionedUser={users[3]} />);
+    const mark = screen.queryByRole('mark', { name: `${users[3].name} mentioned` });
+
+    expect(mark).toBeNull();
+  });
+
+  test('input should block user typing once it reaches maxLength', async () => {
     const user = userEvent.setup();
     render(<CoreInput {...props} maxLength={40} />);
     const input = screen.getByRole('textbox', { name: 'advanced comment input' });
@@ -88,7 +122,8 @@ describe('CoreInput', () => {
     expect(input.textContent).toBe(typing.slice(0, 40));
   });
 
-  xtest('user writes full comment with text, 2 Mentions, 2 Emojis and 2 new lines', async () => {
+  test('user writes full comment with text, 2 Mentions, 2 Emojis and 2 new lines', async () => {
+    spyMentionedUserSet.mockReset();
     const user = userEvent.setup();
 
     let content : string = '';
@@ -150,7 +185,7 @@ describe('CoreInput', () => {
     expect(spySend).toHaveBeenCalledWith(comment);
   });
 
-  xtest('user edits a comment and send it', async () => {
+  test('user edits a comment and send it', async () => {
     const user = userEvent.setup();
     let content: string = '';
     const { rerender } = render(
@@ -186,7 +221,25 @@ describe('CoreInput', () => {
     expect(spySend).toHaveBeenCalledWith(edited);
   });
 
-  xtest('should use custom functions and regex to convert and parse mentioned user id', async () => {
+  test('shoul parse mention like User@1 if initialValue is passed with no user', async () => {
+    const user = userEvent.setup();
+    let content: string = '';
+    const { rerender } = render(
+      <CoreInput
+        {...props}
+        initialValue="Hey {{1}}"
+        onContentChange={(cnt: string) => {
+          content = cnt;
+        }}
+      />
+    );
+    const input = screen.getByRole('textbox', { name: 'advanced comment input' });
+
+    // mentioned users tags should be there
+    screen.getByRole('mark', { name: 'User@1 mentioned' });
+  });
+
+  test('should use custom functions and regex to convert and parse mentioned user id', async () => {
     const customComment = 'Hey [**2**] well done 😃.\n\nI like the new App you made [**3**] 👍, pretty nice.';
 
     const mentionToString = (id: number | string) : string => {

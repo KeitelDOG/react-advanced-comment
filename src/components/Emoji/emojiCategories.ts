@@ -1,6 +1,6 @@
 export type CategoryName = 'history' | 'emotion' | 'nature' | 'food' | 'activities' | 'places' | 'objects' | 'symbols' | 'flags';
 
-type Colors = {
+export type Colors = {
   [key in CategoryName]?: string
 }
 

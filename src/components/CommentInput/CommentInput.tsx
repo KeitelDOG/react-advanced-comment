@@ -204,16 +204,18 @@ export default function CommentInput(props : CommentInputProps) {
   }, [mentionUsers]);
 
   const atView : ReactNode = React.useMemo(() => {
-    if (renderMentions && AtIconComponent) {
-      return <AtIconComponent />;
-    } else {
-      return (
-        <AtIcon
-          height={24}
-          width={24}
-          color={mentionedIds.length >= mentionsLimit ? '#ccc' : atIconColor}
-        />
-      );
+    if (renderMentions) {
+      if (AtIconComponent) {
+        return <AtIconComponent />;
+      } else {
+        return (
+          <AtIcon
+            height={24}
+            width={24}
+            color={mentionedIds.length >= mentionsLimit ? '#ccc' : atIconColor}
+          />
+        );
+      }
     }
   }, [mentionedIds]);
 
@@ -242,10 +244,12 @@ export default function CommentInput(props : CommentInputProps) {
   }, []);
 
   const emoticonView : ReactNode = React.useMemo(() => {
-    if (renderEmojiPicker && EmojiIconComponent) {
-      return <EmojiIconComponent />;
-    } else {
-     return <EmojiIcon height={24} width={24} fill={emojiIconColor} />;
+    if (renderEmojiPicker) {
+      if (EmojiIconComponent) {
+        return <EmojiIconComponent />;
+      } else {
+      return <EmojiIcon height={24} width={24} fill={emojiIconColor} />;
+      }
     }
   }, []);
 

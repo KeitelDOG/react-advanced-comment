@@ -36,7 +36,7 @@ describe('Avatar', () => {
 
   test('should render User Text Avatar if no user has no image', () => {
     const { id, name } = users[0];
-    render(<Avatar user={{ id, name }} size={24} />);
+    render(<Avatar user={{ id, name }} />);
     const user = screen.getByLabelText(`${name} avatar`);
     expect(user.textContent).toBe(name[0]);
   });

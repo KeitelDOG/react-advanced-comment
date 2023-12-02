@@ -37,11 +37,11 @@ describe('Mentions', () => {
     render(
       <Mentions
         {...props}
-        renderCloseIcon={<span arial-label="custom close">close</span>}
+        renderCloseIcon={<span data-testid="custom-close">close</span>}
         onClose={spyClose}
       />
     );
-    const close = screen.getByLabelText('custom close');
+    const close = screen.getByTestId('custom-close');
     fireEvent.click(close);
     expect(spyClose).toHaveBeenCalled();
   });
@@ -51,7 +51,7 @@ describe('Mentions', () => {
       <Mentions
         {...props}
         moduleClasses={{ user: 'hashclass' }}
-        renderCloseIcon={<span arial-label="custom close">close</span>}
+        renderCloseIcon={<span data-testid="custom-close">close</span>}
         onClose={spyClose}
       />
     );
