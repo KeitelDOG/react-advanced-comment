@@ -29,9 +29,11 @@
   "homepage": "https://github.com/KeitelDOG/react-advanced-comment#readme",
   "scripts": {
     "rollup": "rimraf dist && rollup -c",
-    "test": "jest",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test": "jest",
+    "test:watch": "jest --watch --verbose",
+    "test:coverage": "jest --coverage"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",
@@ -39,7 +41,6 @@
     "@babel/preset-react": "^7.22.15",
     "@babel/preset-typescript": "^7.23.0",
     "@rollup/plugin-commonjs": "^25.0.5",
-    "@rollup/plugin-json": "^6.0.1",
     "@rollup/plugin-node-resolve": "^15.2.2",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.5",
@@ -78,5 +79,8 @@
   },
   "peerDependencies": {
     "react": "^17.0.2"
+  },
+  "dependencies": {
+    "@testing-library/user-event": "^14.5.1"
   }
 }

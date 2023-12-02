@@ -4,14 +4,11 @@ import CommentInput from './CommentInput';
 import Avatar from '../Avatar';
 import EmojiPicker from '../Emoji';
 import Mentions from '../Mentions';
-import Emotion from '../../svg/Emotion';
+// import Emotion from '../../svg/Emotion';
 import { RenderMentionsProps, RenderEmojiPickerProps } from './CommentInput';
 import emojis from '../../json/emoji-datasource-light.json';
-
-import keitelPic from '../../pics/keitel.jpg';
-import julioPic from '../../pics/julio.jpg';
-import jetroPic from '../../pics/jetro.jpg';
-import djasonPic from '../../pics/djason.jpg';
+import users from '../../data/users';
+// import customCSSModule from './CommentInputCustom.module.css';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -29,17 +26,9 @@ const Template: StoryFn<typeof CommentInput> = (args) => {
   );
 };
 
-const users = [
-  { id: 1, name: 'Keitel Jovin', image: keitelPic },
-  { id: 2, name: 'KeitelDOG', image: keitelPic },
-  { id: 3, name: 'Julio Fils', image: julioPic },
-  { id: 4, name: 'Jetro Joseph', image: jetroPic },
-  { id: 5, name: 'Djason Sylvaince', image: djasonPic },
-];
+const initialValue = `Hey {{2}} well done 😃.
 
-const initialValue = `Hello {{2}} well said 😃.
-
-Hi {{3}} I agree with that too 👍 brother.`;
+I like the new App you made {{3}} 👍, pretty nice.`;
 
 export const MainCommentInput = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
@@ -57,12 +46,13 @@ MainCommentInput.args = {
   // atIconColor: 'blue',
   // emojiIconColor: 'blue',
   // textProgressColors: { one: 'green', two: 'orange', three: 'orange', four: 'red' },
-  // renderAvatar: (
+  textProgressType: 'circle',
+  // AvatarComponent: (
   //   <Avatar user={users[0]} size={32} />
   // ),
   AvatarComponent: () => <Avatar user={users[0]} size={32} />,
   // EmojiIconComponent: () => <Emotion height={24} width={24} fill="red" />,
-  // AtIconComponent: () => <ToolIcon src={atIcon} />,
+  // AtIconComponent: () => <img src={atIcon} />,
   renderMentions: ({ users, onMentionSelected, onClose } : RenderMentionsProps) => (
     <Mentions
       users={users}
@@ -82,6 +72,10 @@ MainCommentInput.args = {
   ),
   renderMentionsInDefaultPosition: true,
   renderEmojiPickerInDefaultPosition: true,
+  /* renderSubmitButton: ({ submitDisabled }) => (
+    <button disabled={submitDisabled}>Submit</button>
+  ), */
+  // moduleClasses: customCSSModule,
   onEmojiOpen: () => console.log('emoji opened'),
   onEmojiClose: () => console.log('emoji closed'),
   onMentionsOpen: () => console.log('mentions opened'),

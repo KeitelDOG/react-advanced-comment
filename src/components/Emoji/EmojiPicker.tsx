@@ -4,12 +4,10 @@ import EmojiTabs from './EmojiTabs';
 import EmojiCell from './EmojiCell';
 import { combineClasses } from '../helpers/combineClasses';
 import getCategories from './emojiCategories';
-import EmojiTabIcon from './EmojiTabIcon';
 import defaultClasses from './EmojiPicker.module.css';
 import Magnify from '../../svg/Magnify';
 import Close from '../../svg/Close';
 import { CategoryName } from './emojiCategories';
-import { User } from '../Mentions/Mentions';
 import { EmojiCellProps } from './EmojiCell';
 
 export type Category = {
@@ -42,13 +40,28 @@ export type EmojiPickerProps = {
   /** Pass recent emojis to automatically load them into history of recently used emoji */
   recentEmojis?: Emoji[],
 
-  /** Which emoji category to load initially */
+  /** Which emoji category to load initially
+   * @default emotion
+  */
   initialCategory?: CategoryName,
+
+  /** Custom category icons to render */
+  categoryIcons?: { [key in CategoryName] : () => React.JSX.Element },
+
+  /** Whether to render a close icon or not.
+   * @default true
+   */
+  renderClose?: boolean,
+
+  /** Render the Icon responsible to close the EmojiPicker if needed. An Icon is rendered by default if renderClose is true. */
+  CloseIconComponent?: () => React.JSX.Element,
 
   /** Set height for Emoji Picker container. You can leave it blank and set height in an outside container. */
   height?: number,
 
-  /** Number of column to display Emojis in grid */
+  /** Number of column to display Emojis in grid
+   * @default 8
+  */
   numColumns?: number,
 
    /** A Class Module to provide to override some classes of the default Class Modules */
@@ -67,32 +80,6 @@ const groupedCategories = (emos : Emoji[]) => {
     acc[emo.category].push(emo);
     return acc;
   }, {} as { [key: string]: Emoji[] });
-};
-
-const filterEmojis = (emojis : Emoji[]) => {
-  return emojis.reduce((acc, emo) => {
-    // skip unified that has more than 2 dashes
-    if (emo.unified.split('-').length > 3) {
-      return acc;
-    }
-    // skip recent version
-    if (Number(emo.added_in) > 12) {
-      return acc;
-    }
-
-    const emolight : Emoji = {
-      name: emo.name,
-      unified: emo.unified,
-      short_name: emo.short_name,
-      short_names: emo.short_names,
-      category: emo.category,
-      sort_order: emo.sort_order,
-      added_in: emo.added_in,
-    };
-
-    acc.push(emolight);
-    return acc;
-  }, [] as Emoji[]);
 };
 
 const sortEmojis = (emos : Emoji[]) => {
@@ -121,6 +108,9 @@ export default function EmojiPicker(props : EmojiPickerProps) {
   const {
     emojis = [],
     initialCategory = 'emotion',
+    categoryIcons,
+    renderClose = true,
+    CloseIconComponent,
     height,
     numColumns = 8,
     moduleClasses,
@@ -236,8 +226,8 @@ export default function EmojiPicker(props : EmojiPickerProps) {
     });
   };
 
-  const onHover = (isHover: boolean, emoji: Emoji) => {
-    if (isHover) {
+  const onHover = (isHovering: boolean, emoji: Emoji) => {
+    if (isHovering) {
       setCurrentEmoji(emoji);
     } else {
       setCurrentEmoji(undefined);
@@ -268,6 +258,7 @@ export default function EmojiPicker(props : EmojiPickerProps) {
 
   return (
     <div
+      data-testid="emoji-picker-container"
       className={classes.emojiPicker}
       style={{ height }}
     >
@@ -277,28 +268,36 @@ export default function EmojiPicker(props : EmojiPickerProps) {
             <Magnify height={22} with={22} color="#aaa"/>
           </div>
           <input
+            role="textbox"
+            aria-label="search emoji"
+            tabIndex={0}
             className={classes.searchInput}
             placeholder="Search Emoji"
-            aria-label="search emoji"
             value={keywords}
             onChange={handleChange}
           />
         </div>
 
         <div className={classes.currentEmojiContainer}>
-          <span className={classes.currentEmoji}>
+          <mark role="mark" aria-label="current emoji" className={classes.currentEmoji}>
             {currentEmoji ? currentEmoji.name.toLowerCase() : ''}
-          </span>
+          </mark>
         </div>
 
-        <div className={classes.closeIcon} onClick={onClose}>
-          <Close height={18} with={18} color="#aaa"/>
-        </div>
+        {renderClose && (
+          <div className={classes.closeIcon} onClick={onClose}>
+            {CloseIconComponent ? (
+              <CloseIconComponent />
+            ) : (
+            <Close height={18} with={18} color="#aaa"/>
+            )}
+          </div>
+        )}
       </div>
       <EmojiTabs
         categories={categories}
+        categoryIcons={categoryIcons}
         activeCategory={category}
-        EmojiTabIcon={EmojiTabIcon}
         onCategoryChange={cat => {
           // remove search keywords
           if (keywords) {
@@ -312,6 +311,9 @@ export default function EmojiPicker(props : EmojiPickerProps) {
       />
       <div
         ref={emojiListRef}
+        id={`${category.id}-tabpanel`}
+        role="tabpanel"
+        aria-labelledby={`${category.id}-tab`}
         className={classes.emojiContainer}
         style={{ gridTemplateColumns: 'auto '.repeat(numColumns) }}
       >

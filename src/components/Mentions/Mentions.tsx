@@ -24,9 +24,7 @@ export default function Mentions(props : MentionsProps) {
   const classes = combineClasses(defaultClasses, moduleClasses);
 
   const handleMentionSelected = (user : User) => {
-    if (typeof onMentionSelected === 'function') {
-      onMentionSelected(user.id);
-    }
+    onMentionSelected(user.id);
   };
 
   return (
@@ -41,11 +39,12 @@ export default function Mentions(props : MentionsProps) {
           )}
         </div>
       </div>
-      <div className={classes.usersContainer}>
+      <ul aria-label="Users to mention" className={classes.usersContainer}>
         {users.map((user, ind) => {
           return (
-            <div
+            <li
               key={`tag-user-${ind}`}
+              aria-label={`select ${user.name}`}
               className={classes.user}
               onClick={() => handleMentionSelected(user)}
             >
@@ -55,10 +54,10 @@ export default function Mentions(props : MentionsProps) {
                 className={classes.mentionPhoto}
               />
               <span className={classes.mentionText}>{user.name}</span>
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </div>
   );
 }

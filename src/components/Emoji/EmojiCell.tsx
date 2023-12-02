@@ -24,6 +24,8 @@ export default function EmojiCell(props : EmojiCellProps) {
   return (
     <div className={classes.emojiCell}>
       <span
+        role="img"
+        aria-label={emoji.name}
         className={classes.emojiText}
         onMouseOver={() => onHover(true, emoji)}
         onMouseOut={() => onHover(false, emoji)}

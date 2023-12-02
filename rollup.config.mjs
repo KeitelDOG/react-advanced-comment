@@ -41,7 +41,7 @@ export default [
     plugins: plugins.concat(
       [
         typescript({
-          tsconfig: './tsconfig.json',
+          tsconfig: './tsconfig.rollup.json',
           declarationDir: 'dist/cjs'
         })
       ]
@@ -61,24 +61,16 @@ export default [
     plugins: plugins.concat(
       [
         typescript({
-          tsconfig: './tsconfig.json',
-          declarationDir: 'dist/esm'
+          tsconfig: './tsconfig.rollup.json',
+          declarationDir: 'dist/esm',
         })
       ],
       copy({
         // copy json directory
         targets: [
-          { src: 'src/json/*', dest: 'dist/json' },
+          { src: 'src/json/emoji-datasource-light.json', dest: 'dist/json' },
         ]
       })
     ),
-    // external: ['react', 'react-dom', 'styled-components'],
-    // external: [/\.css$/],
   },
-  /* {
-    input: 'dist/esm/types/index.d.ts',
-    output: [{ file: 'dist/index.d.ts', format: 'esm' }],
-    plugins: [dts()],
-    external: [/\.(css|less|scss)$/],
-	}, */
 ];

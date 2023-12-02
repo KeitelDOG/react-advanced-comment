@@ -19,7 +19,7 @@ const formatContent = (
     const index = mentionMatches.index;
     const uId = parseMentionId(mentionMatches[0]);
     const firstContent = ctnt.slice(0, index);
-    const usr = (mentions || []).filter(u => u.id === uId)[0];
+    const usr = (mentions).filter(u => u.id === uId)[0];
 
     let part : ContentPart;
     if (usr) {
