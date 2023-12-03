@@ -54,6 +54,7 @@
     "@storybook/react-webpack5": "^7.4.6",
     "@storybook/testing-library": "^0.2.2",
     "@testing-library/react": "^12.1.5",
+    "@testing-library/user-event": "^14.5.1",
     "@types/jest": "^29.5.5",
     "@types/react": "^17.0.2",
     "babel-jest": "^29.7.0",
@@ -79,8 +80,5 @@
   },
   "peerDependencies": {
     "react": "^17.0.2"
-  },
-  "dependencies": {
-    "@testing-library/user-event": "^14.5.1"
   }
 }

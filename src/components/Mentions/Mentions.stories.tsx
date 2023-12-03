@@ -6,7 +6,7 @@ import users from '../../data/users';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: 'ReactComponentLibrary/Mentions',
+  title: 'React Advanced Comment/Mentions',
   component: Mentions,
   tags: ['autodocs'],
 } as Meta<typeof Mentions>;

@@ -1,23 +1,23 @@
 import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
-import EmojiPicker from './EmojiPicker';
+import EmojiPickerComp from './EmojiPicker';
 import emojis from '../../json/emoji-datasource-light.json';
 import Emoticon from '../../svg/Emoticon';
 // import styles from './Custom.module.css';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: 'ReactComponentLibrary/EmojiPicker',
-  component: EmojiPicker,
+  title: 'React Advanced Comment/EmojiPicker',
+  component: EmojiPickerComp,
   tags: ['autodocs'],
-} as Meta<typeof EmojiPicker>;
+} as Meta<typeof EmojiPickerComp>;
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const Template: StoryFn<typeof EmojiPicker> = (args) => <EmojiPicker {...args} />;
+const Template: StoryFn<typeof EmojiPickerComp> = (args) => <EmojiPickerComp {...args} />;
 
-export const UserEmojiPicker = Template.bind({});
+export const EmojiPicker = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
-UserEmojiPicker.args = {
+EmojiPicker.args = {
   emojis,
   initialCategory: 'emotion',
   // renderClose: false,

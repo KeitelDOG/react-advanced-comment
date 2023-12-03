@@ -7,7 +7,7 @@ import users from '../../data/users';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: 'ReactComponentLibrary/CoreInput',
+  title: 'React Advanced Comment/CoreInput',
   component: CoreInput,
   tags: ['autodocs']
 } as Meta<typeof CoreInput>;
