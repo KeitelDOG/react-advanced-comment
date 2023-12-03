@@ -29,6 +29,7 @@ export type Emoji = {
   category: string,
   sort_order: number,
   added_in: string,
+  [key: string]: any,
 };
 
 export type EmojiPickerProps = {

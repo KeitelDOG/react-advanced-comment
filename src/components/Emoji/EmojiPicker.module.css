@@ -52,6 +52,7 @@
   max-width: 160px;
   height: 40px;
   overflow: hidden;
+  background: none;
 }
 .closeIcon {
   margin: 0;
