@@ -11,6 +11,11 @@ export type EmojiTabsProps = {
   activeCategory: Category,
   /** Custom category icons to render */
   categoryIcons?: { [key in CategoryName]? : () => React.JSX.Element },
+
+  /** A Class Module to provide to override some classes of the default Class Modules.
+   * classes: `tabItems, tabItem, activeTabItem`
+   * @default css module
+  */
   moduleClasses?: { [key : string] : any },
   onCategoryChange(category: Category) : void,
 }
@@ -26,7 +31,12 @@ export default function EmojiTabs(props : EmojiTabsProps) {
   const classes = combineClasses(defaultClasses, moduleClasses);
 
   return (
-    <div role="tablist" aria-label="Emoji Categories" className={classes.tabItems}>
+    <div
+      role="tablist"
+      aria-label="Emoji Categories"
+      data-class="tabItems"
+      className={classes.tabItems}
+    >
       {Object.keys(categories).map((key: string) => {
         const cat : Category = categories[key];
         const Icon = cat.icon;
@@ -61,6 +71,7 @@ export default function EmojiTabs(props : EmojiTabsProps) {
             aria-label={cat.name}
             aria-selected={isSelected}
             aria-controls={`${cat.id}-tabpanel`}
+            data-class="tabItem"
             className={classes.tabItem}
             style={tabStyle}
             onClick={() => onCategoryChange(cat)}
@@ -74,6 +85,7 @@ export default function EmojiTabs(props : EmojiTabsProps) {
             {isSelected && (
               <div
                 style={tabStyle}
+                data-class="activeTabItem"
                 className={classes.activeTabItem}
               />
             )}

@@ -45,11 +45,6 @@ export type BaseInputProps = {
   */
   tagColor?: string,
 
-  /** A Class Module to provide to override some classes of the default Class Modules.
-   * @default css module
-  */
-  moduleClasses?: { [key : string] : any },
-
   /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively.
    *
    *  N.B. **A Default RegExp is already provided**
@@ -104,6 +99,12 @@ export type CoreInputProps = BaseInputProps & {
   * @default false
   */
   sending?: boolean,
+
+  /** A Class Module to provide to override some classes of the default Class Modules.
+   * classes: `editableContainer, input`
+   * @default css module
+  */
+  moduleClasses?: { [key : string] : any },
 
   /** Callback when the passed Emoji string has been inserted */
   onEmojiSet() : void,
@@ -330,7 +331,6 @@ export default function CoreInput(props: CoreInputProps) {
     for (let i = 0; i < childNodes.length; i++) {
       const node = childNodes[i];
 
-      // node of type  now () ----
       if (node.nodeName === 'SPAN') {
         nodes.push(node);
         continue;
@@ -351,7 +351,7 @@ export default function CoreInput(props: CoreInputProps) {
           if (i === 0) {
             continue;
           }
-          // if last pushed node is object then keep last empty text node
+          // if last pushed node is SPAN then keep last empty text node
           if (
             nodes[nodes.length - 1] &&
             nodes[nodes.length - 1].nodeName === 'SPAN' &&
@@ -569,37 +569,75 @@ export default function CoreInput(props: CoreInputProps) {
         handleContentChange();
 
         const crt = getCaretPosition();
-        setCaretValue(crt);
 
         const mentionedIds = getMentionedIds();
 
-        // CHECK if SPAN mention tag is edited. If yes, delete it
+        // 1- CHECK if SPAN mention tag is edited. If yes, delete it
         var sel = window.getSelection();
         if (sel && sel.anchorNode && mentionedIds.length) {
           // verify if caret is in position inside span mention
           let [nodeIndex,] = getNodeIndexAndChildPos();
           if (editable.childNodes[nodeIndex].nodeName === 'SPAN') {
             const span = editable.childNodes[nodeIndex] as HTMLSpanElement;
-            // span mention has been edited, then delete it
-            let length = (span.textContent as string).length;
-            editable.removeChild(span);
-            // compact to avoid browser engine to create
-            // a FONT tag in place of deleted SPAN tag
-            compactEditableNodes();
+            if (span.getAttribute('data-id')) {
+              // span mention has been edited, then delete it
+              let length = (span.textContent as string).length;
+              editable.removeChild(span);
+              // compact to avoid browser engine to create
+              // a FONT tag in place of deleted SPAN tag
+              compactEditableNodes();
 
-            setCaretPosition({
-              start: crt.start - length,
-              end: crt.start - length,
-            });
+              const newCrt = {
+                start: crt.start - length,
+                end: crt.start - length,
+              };
+              setCaretPosition(newCrt);
+              setCaretValue(newCrt);
 
-            const ids = getMentionedIds();
-            onMentionedUsersUpdate(ids);
-            handleContentChange();
-            return;
+              const ids = getMentionedIds();
+              onMentionedUsersUpdate(ids);
+              handleContentChange();
+              return;
+            }
           }
         }
 
-        // MENTION --
+        // 2- CHECK ANOMALITIES
+        // FONT anomaly: after mention is deleted, next input creates a FONT tag by browser engine
+        const nodes : ChildNode[] = [];
+        const childNodes = Array.from(editable.childNodes);
+        let anomalies = 0;
+        for (let i = 0; i < childNodes.length; i++) {
+          const node = childNodes[i];
+          if (node.nodeName === 'FONT') {
+            anomalies += 1;
+            // replace font by node text
+            nodes.push(document.createTextNode(node.textContent as string));
+          } else {
+            nodes.push(node);
+          }
+        }
+
+        if (anomalies) {
+          editable.innerHTML = '';
+          for (let i = 0; i < nodes.length; i++) {
+            editable.append(nodes[i]);
+          }
+
+          // put caret back if that happens
+          const savedCrt = getCaretValue();
+          const newCrt = {
+            start: savedCrt.start + 1,
+            end: savedCrt.end + 1,
+          }
+          setCaretPosition(newCrt);
+          setCaretValue(newCrt);
+        } else {
+          // if no anomality detected, save the caret value
+          setCaretValue(crt);
+        }
+
+        // 3- CHECK MENTION
         if (mentionsLimit > 0 && mentionedIds.length === mentionsLimit) {
           // Skip after mentions limit
           return;
@@ -837,7 +875,12 @@ export default function CoreInput(props: CoreInputProps) {
   }, [sending]);
 
   return (
-    <div data-testid="core-input-container" className={classes.editableContainer} style={{ borderBottomColor: lineColor }}>
+    <div
+      data-testid="core-input-container"
+      data-class="editableContainer"
+      className={classes.editableContainer}
+      style={{ borderBottomColor: lineColor }}
+    >
       <div
         ref={ref}
         role="textbox"
@@ -846,6 +889,7 @@ export default function CoreInput(props: CoreInputProps) {
         tabIndex={0}
         data-caretstart="0"
         data-caretend="0"
+        data-class="input"
         className={classes.input}
       />
     </div>

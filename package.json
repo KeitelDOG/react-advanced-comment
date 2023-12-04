@@ -1,6 +1,6 @@
 {
   "name": "@keiteldog/react-advanced-comment",
-  "version": "0.0.2",
+  "version": "0.1",
   "description": "A React library for giving opinion with advanced comment supporting mentions and emoji in contenteditable div",
   "keywords": [
     "react",

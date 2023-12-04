@@ -14,7 +14,7 @@ const plugins = [
   peerDepsExternal(),
   resolve(),
   commonjs(),
-  // terser(),
+  terser(),
   postcss(),
   svg({
     /**

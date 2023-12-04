@@ -1,5 +1,5 @@
 ## react-advanced-comment
-A React library for commenting with advanced comment with contenteditable div mechanism, that supports mentions and emoji interactions.
+A React library for commenting with advanced features using contenteditable div mechanism, that supports mentions and emoji interactions.
 
 <img width="480" alt="EmojiMart" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/419ab8f9-9b01-4906-b893-f526b609ac30">
 
@@ -11,9 +11,9 @@ A React library for commenting with advanced comment with contenteditable div me
 - Mentions
 - Emoji Picker
 
-Each feature has multiple components that you can use and combine on their own.
+Each feature has multiple components that you can use on their own and combine together. Each one has CSS Module that can be overriden with `moduleClasses` props.
 
-**NB: The Comment Input uses a Core Input component internally. And it can integrate existing Mentions and Emoji Picker features on rendering, so that you can integrate your own Mentions selector and Emoji Picker.**
+**N.B. : The Comment Input uses a Core Input component internally. And it can integrate existing Mentions selector and Emoji Picker features on rendering, so that you can integrate your own Mentions selector and Emoji Picker.**
 
 ### 📖 Table of Contents
 - [🔑 Installation](#-installation)
@@ -34,14 +34,13 @@ yarn add @keiteldog/advanced-comment-input
 
 #### 💬 Comment Input
 
-######Why creating this package?
+###### Why creating this package?
+The first problem with advanced input is that you cannot insert HTML tag inside `<input>` and `<textarea>`. Some techniques allow to overlap an hidden colored mark to hightlight the `@mention` part inside `<textarea>`. In our approach, we used the Content Editable DIV which combines Text Nodes and SPAN Nodes like `<div contenteditable>Hello <span>World</span></div>` which is a kind of input that allows HTML tag.
 
-The first problem with advanced input is that you cannot insert HTML tag inside `<input>` and `<textarea>`. Some techniques allow to overlap an hidden colored mark to hightlight the `@mention` part inside `<textarea>`. We used the Content Editable DIV which combines Text Nodes and SPAN Nodes like `<div contenteditable>Hello <span>World</span></div>` which is a kind of input that allows allow HTML tag.
-
-Using the cedit DIV, the second problem starts when you can't reassign React State value to the input without losing the Caret position and having to put it back, which makes it difficult for the traditional approach of passing state value to the div. That is because MDN and Broswers use their own engine to structure the input in cedit DIV which can strange sometimes. And this package uses a Core Input component to control and limit unwanted behavior of Browsers while texting.
+When using the Content Editable DIV, the second problem starts when you can't reassign React State value to the input without losing the Caret position and having to put it back, which makes it difficult and unefficient for the traditional approach of passing state value to the div. That is because MDN and Broswers use their own little engine to structure the input in Content Editable DIV which can be strange sometimes. This package uses a Core Input component to control and limit unwanted behaviors of the Browsers' engine while texting.
 
 ###### How to use it?
-You can use Comment Input with or without using Emoji Picker and Mentions selector. If you don't pass the props to render them, the Emoticon and At icons will not be there.
+You can use Comment Input with or without using Emoji Picker and Mentions selector containers. If you don't pass the props to render them, the Emoticon and At icons will not be there and the containers won't show up.
 
 ```jsx
 import {
@@ -102,11 +101,10 @@ export default function CommentInputTest(props) {
   );
 }
 ```
-<img width="360" alt="Comment Input" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/91a9b9bc-7e01-488f-8c73-033cda8b3872">
+<img width="400" alt="Comment Input" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/91a9b9bc-7e01-488f-8c73-033cda8b3872">
 
 ###### Editing
-
-If you want to edit a Comment, pass and initial value with initial mentioned Users if there is any mention.
+If you want to edit a Comment, pass an initial value with initial mentioned Users if there is any mention.
 
 ```jsx
   const comment = 'Hello {{2}} and {{3}}';
@@ -121,6 +119,41 @@ If you want to edit a Comment, pass and initial value with initial mentioned Use
     />
   );
 ```
+
+###### Styling using Custom CSS Module
+The package uses CSS Module for styling, but you can pass a custom CSS Module classes in props to override one or many classes already defined. The class names are in Documentation and reference in HTML tags as `data-class` like `<img data-class="avatarImage" />`:
+
+`Input.module.css`:
+```css
+  .inputWrapper {
+    flex: 1;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 6px;
+    padding-right: 6px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid green; /* change to green */
+    border-radius: 10px; /* change to 10px */
+    box-shadow: 1px 1px 4px green; /* change to green */
+  }
+```
+
+In component:
+```jsx
+  import customClasses from './Input.module.css';
+  // ...
+  return (
+    <CommentInput
+      // ...
+      moduleClasses={customClasses}
+      // ...
+    />
+  );
+```
+
+Make sure you all the CSS attributes are reput under the class you override. List of CSS classes are provided in Documentation.
 
 For all Props, see direct link for Comment Input Documentation: https://keiteldog.github.io/react-advanced-comment/path=/docs/react-advanced-comment-commentinput--docs
 
@@ -163,13 +196,14 @@ For all Props, see direct link for Comment Input Documentation: https://keiteldo
 |forceDisableSubmitButton|Should the submit button be disabled no matter what?boolean|-|
 |atIconColor|Color of icon that open the Mentions liststring|-|
 |emojiIconColor|Color of icon that open the Mentions liststring|-|
-|onMentionsClose|Callback when the Mentions list is close(() =&gt; void)|-|
+|moduleClasses|A Class Module to provide to override some classes of the default Class Modules.classes: `userInputComment, authWrapper, textProgress, textCounter, inputWrapper, editableTools, toolsLeftSection, toolsRightSection, tool, toolClickable, mentionsContainer, emojiPickerContainer, submit`. { [key: string]: any; }|css module|
+|onMentionsClose|Callback when the Mentions list is close(() => void)|-|
 
 
 #### 🗣️ Mentions
-Mentions component provide very simple user list to display while typing or when clicking the @ icon and then chose.
+Mentions component provides very simple user list to display while typing or when clicking the @ icon and then chose. It accepts callback `onMentionSelected(id: number | string)` and `onClose`.
 
-<img width="360" alt="Comment Input" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/62965e1d-e9e9-4cb6-9f49-8b1acdd1eeac">
+<img width="400" alt="Comment Input" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/62965e1d-e9e9-4cb6-9f49-8b1acdd1eeac">
 
 For all Props, see direct link for Mentions Documentation: https://keiteldog.github.io/react-advanced-comment/path=/docs/react-advanced-comment-mentions--docs
 
@@ -201,13 +235,13 @@ You can pass your own Mentions implementation like this:
 ```
 
 #### 😀 Emoji Picker
-The Emoji Picker component is very basic. We recommend you to use and integrate a more advance Emoji Picker like https://www.npmjs.com/package/emoji-mart. We gave an example below on how to use it.
+The Emoji Picker component is very basic. We recommend you to use and integrate a more advanced Emoji Picker like https://www.npmjs.com/package/emoji-mart. We gave an example below on how to use it.
 
 However, if you consider evaluating the default EmojiPicker, here is more details about it:
-- A light Datasource is provided, 1584 emojis : `255 KB`
-- No Skin color selection implemented
-- Limited to version 12.
-- The datasource JSON file must be provided, you can use existing one, or provide your own, creating from Emoji Data Sources like: https://www.jsdelivr.com/package/npm/emoji-datasource or similar.
+- A light Datasource is provided, 1584 emojis : `255 KB` against the original 6K emojis for `1.3MB` in full size.
+- No Skin color selection implemented.
+- Limited to version 12 of emojis.
+- The datasource JSON file must be provided, you can use the existing one in the package, or provide your own, created from Emoji Data Sources like: https://www.jsdelivr.com/package/npm/emoji-datasource or similar.
 
 If you provide your own Emoji source, bigger or smaller they have to match the Type:
 ```ts
@@ -236,7 +270,7 @@ const emojis: Emoji[] = [
 ];
 ```
 
-<img width="360" alt="Comment Input" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/94ee78bc-f289-4c34-95b8-2167d1cc21ad">
+<img width="400" alt="Comment Input" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/94ee78bc-f289-4c34-95b8-2167d1cc21ad">
 
 For all Props, see direct link for Emoji Picker Documentation: https://keiteldog.github.io/react-advanced-comment/path=/docs/react-advanced-comment-emojipicker--docs
 
@@ -267,17 +301,17 @@ We also recommend to use Lazy loading to separate Emoji Picker code chunk from m
 ```jsx
 import dynamic from 'next/dynamic';
 
-const DynamicEmojiPicker = dynamic(() => import('EmojiPickerComponent'), {
+const DynamicEmojiPicker = dynamic(() => import('./EmojiPickerComponent'), {
   ssr: false,
   loading: () => <span>loading</span>,
 });
 ```
 
-And `EmojiPickerComponent` would be a component file that import the wanter Emoji Picker and the Emoji Data that you want.
+And `EmojiPickerComponent.jsx` would be a component file that import the Emoji Picker and the Emoji Data that you need.
 
 #### 🔬 Core Input
 
-The Core Input controls the behaviors of the input and keep things together and as stable as possible when inserting Emoji and Mention tags. You can use it like:
+The Core Input controls the behaviors of the input and keep things together and as stable as possible when inserting Emoji and Mention tags. You can use it at a base to complete your fully customized Input like:
 
 ```jsx
 import React from 'react';
