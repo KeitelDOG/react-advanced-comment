@@ -65,7 +65,10 @@ export type EmojiPickerProps = {
   */
   numColumns?: number,
 
-   /** A Class Module to provide to override some classes of the default Class Modules */
+  /** A Class Module to provide to override some classes of the default Class Modules.
+   * classes: `emojiPicker, tools, search, magnifyIcon, searchInput, currentEmojiContainer, currentEmoji, closeIcon, emojiContainer`
+   * @default css module
+  */
   moduleClasses?: { [key : string] : any },
 
   /** Callback when an Emoji is selected */
@@ -260,18 +263,20 @@ export default function EmojiPicker(props : EmojiPickerProps) {
   return (
     <div
       data-testid="emoji-picker-container"
+      data-class="emojiPicker"
       className={classes.emojiPicker}
       style={{ height }}
     >
-      <div className={classes.tools}>
-        <div className={classes.search}>
-          <div className={classes.magnifyIcon}>
+      <div data-class="tools" className={classes.tools}>
+        <div data-class="search" className={classes.search}>
+          <div data-class="magnifyIcon" className={classes.magnifyIcon}>
             <Magnify height={22} with={22} color="#aaa"/>
           </div>
           <input
             role="textbox"
             aria-label="search emoji"
             tabIndex={0}
+            data-class="searchInput"
             className={classes.searchInput}
             placeholder="Search Emoji"
             value={keywords}
@@ -279,14 +284,19 @@ export default function EmojiPicker(props : EmojiPickerProps) {
           />
         </div>
 
-        <div className={classes.currentEmojiContainer}>
-          <mark role="mark" aria-label="current emoji" className={classes.currentEmoji}>
+        <div data-class="currentEmojiContainer" className={classes.currentEmojiContainer}>
+          <mark
+            role="mark"
+            aria-label="current emoji"
+            data-class="currentEmoji"
+            className={classes.currentEmoji}
+          >
             {currentEmoji ? currentEmoji.name.toLowerCase() : ''}
           </mark>
         </div>
 
         {renderClose && (
-          <div className={classes.closeIcon} onClick={onClose}>
+          <div data-class="closeIcon" className={classes.closeIcon} onClick={onClose}>
             {CloseIconComponent ? (
               <CloseIconComponent />
             ) : (
@@ -315,6 +325,7 @@ export default function EmojiPicker(props : EmojiPickerProps) {
         id={`${category.id}-tabpanel`}
         role="tabpanel"
         aria-labelledby={`${category.id}-tab`}
+        data-class="emojiContainer"
         className={classes.emojiContainer}
         style={{ gridTemplateColumns: 'auto '.repeat(numColumns) }}
       >

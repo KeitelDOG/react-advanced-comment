@@ -14,18 +14,21 @@ describe('Avatar', () => {
   const comp = <Avatar user={users[0]} size={24} moduleClasses={{ badge: 'hashclass' }} />;
 
   test('should render div and img with title and custom classes', () => {
-    render(comp);
+    render(<Avatar user={users[0]} size={24} moduleClasses={{ badge: 'hashclass' }} />);
     const elems = screen.getAllByTitle(users[0].name);
     expect(elems.length).toBe(2);
   });
 
-  test('should render img with info', () => {
-    render(comp);
+  test('should render img with info with orange badge', () => {
+    render(<Avatar user={users[0]} size={24} showBadge={true} badgeColor='orange' />);
     const img = screen.getByRole('img');
     expect(img.getAttribute('title')).toBe(users[0].name);
     expect(img.getAttribute('alt')).toBe(users[0].name);
     expect(img.getAttribute('src')).toBe(users[0].image);
     expect(img.getAttribute('style')).toBe('height: 24px;');
+
+    const badge = screen.getByTestId('avatar-badge');
+    expect(badge.style.backgroundColor).toBe('orange');
   });
 
   test('should render default Guest Text Avatar if no user is passed', () => {

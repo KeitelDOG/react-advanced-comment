@@ -5,6 +5,10 @@ import { Emoji } from './EmojiPicker';
 
 export type EmojiCellProps = {
   emoji: Emoji,
+  /** A Class Module to provide to override some classes of the default Class Modules.
+   * classes: `emojiCell, emojiText`
+   * @default css module
+  */
   moduleClasses?: { [key : string] : any },
   onHover?(isHover: boolean, emoji: Emoji) : void,
   onSelect(emoji: Emoji, emojiChar: string) : void,
@@ -22,10 +26,11 @@ export default function EmojiCell(props : EmojiCellProps) {
   const emojiChar = charFromUtf16(emoji.unified);
 
   return (
-    <div className={classes.emojiCell}>
+    <div data-class="emojiCell" className={classes.emojiCell}>
       <span
         role="img"
         aria-label={emoji.name}
+        data-class="emojiText"
         className={classes.emojiText}
         onMouseOver={() => onHover(true, emoji)}
         onMouseOut={() => onHover(false, emoji)}

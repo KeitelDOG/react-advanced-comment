@@ -110,6 +110,12 @@ export type CommentInputProps = BaseInputProps & {
   /** Color of icon that open the Mentions list */
   emojiIconColor?: string,
 
+  /** A Class Module to provide to override some classes of the default Class Modules.
+   *  classes: `userInputComment, authWrapper, textProgress, textCounter, inputWrapper, editableTools, toolsLeftSection, toolsRightSection, tool, toolClickable, mentionsContainer, emojiPickerContainer, submit`
+   * @default css module
+  */
+  moduleClasses?: { [key : string] : any },
+
   /** Callback when the Emoji Picker is open */
   onEmojiOpen?() : void,
 
@@ -193,7 +199,7 @@ export default function CommentInput(props : CommentInputProps) {
 
       if (renderMentionsInDefaultPosition) {
         view = (
-          <div className={classes.mentionsContainer}>
+          <div data-class="mentionsContainer" className={classes.mentionsContainer}>
             {view}
           </div>
         );
@@ -233,7 +239,7 @@ export default function CommentInput(props : CommentInputProps) {
 
       if (renderEmojiPickerInDefaultPosition) {
         view = (
-          <div className={classes.emojiPickerContainer}>
+          <div data-class="emojiPickerContainer" className={classes.emojiPickerContainer}>
             {view}
           </div>
         );
@@ -264,6 +270,7 @@ export default function CommentInput(props : CommentInputProps) {
     } else {
       return (
         <button
+          data-class="submit"
           className={classes.submit}
           style={{
             backgroundColor: submitDisabled ? '#ccc' : submitButtonColor,
@@ -298,13 +305,14 @@ export default function CommentInput(props : CommentInputProps) {
 
   return (
     <div>
-      <div className={classes.userInputComment}>
-        <div className={classes.authWrapper}>
+      <div data-class="userInputComment" className={classes.userInputComment}>
+        <div data-class="authWrapper" className={classes.authWrapper}>
           {AvatarComponent && <AvatarComponent/>}
         </div>
 
         <div
           data-testid="comment-input-container"
+          data-class="inputWrapper"
           className={classes.inputWrapper}
           style={{ borderColor: lineColor }}
         >
@@ -352,10 +360,11 @@ export default function CommentInput(props : CommentInputProps) {
             }}
           />
 
-          <div className={classes.editableTools}>
-            <div className={classes.toolsLeftSection}>
+          <div data-class="editableTools" className={classes.editableTools}>
+            <div data-class="toolsLeftSection" className={classes.toolsLeftSection}>
               {Boolean(emoticonView) && (
                 <div
+                  data-class="toolClickable"
                   className={classes.toolClickable}
                   onClick={() => {
                     if (!showEmoji) {
@@ -373,6 +382,7 @@ export default function CommentInput(props : CommentInputProps) {
 
               {Boolean(atView) && (
                 <div
+                  data-class="toolClickable"
                   className={classes.toolClickable}
                   style={{ cursor: mentionedIds.length >= mentionsLimit ? 'auto' : 'pointer' }}
                   onClick={() => {
@@ -398,7 +408,7 @@ export default function CommentInput(props : CommentInputProps) {
               )}
             </div>
 
-            <div className={classes.toolsRightSection}>
+            <div data-class="toolsRightSection" className={classes.toolsRightSection}>
               {maxLength && (
                 <div className={classes.tool}>
                   <meter
@@ -408,10 +418,12 @@ export default function CommentInput(props : CommentInputProps) {
                     high={80}
                     max={100}
                     value={percent}
+                    data-class="textProgress"
                     className={classes.textProgress}
                     style={progressStyle}
                   >
                     <span
+                      data-class="textCounter"
                       className={classes.textCounter}
                       style={{ color: progressColor }}
                     >

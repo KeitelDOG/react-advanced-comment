@@ -45,11 +45,6 @@ export type BaseInputProps = {
   */
   tagColor?: string,
 
-  /** A Class Module to provide to override some classes of the default Class Modules.
-   * @default css module
-  */
-  moduleClasses?: { [key : string] : any },
-
   /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively.
    *
    *  N.B. **A Default RegExp is already provided**
@@ -104,6 +99,12 @@ export type CoreInputProps = BaseInputProps & {
   * @default false
   */
   sending?: boolean,
+
+  /** A Class Module to provide to override some classes of the default Class Modules.
+   * classes: `editableContainer, input`
+   * @default css module
+  */
+  moduleClasses?: { [key : string] : any },
 
   /** Callback when the passed Emoji string has been inserted */
   onEmojiSet() : void,
@@ -837,7 +838,12 @@ export default function CoreInput(props: CoreInputProps) {
   }, [sending]);
 
   return (
-    <div data-testid="core-input-container" className={classes.editableContainer} style={{ borderBottomColor: lineColor }}>
+    <div
+      data-testid="core-input-container"
+      data-class="editableContainer"
+      className={classes.editableContainer}
+      style={{ borderBottomColor: lineColor }}
+    >
       <div
         ref={ref}
         role="textbox"
@@ -846,6 +852,7 @@ export default function CoreInput(props: CoreInputProps) {
         tabIndex={0}
         data-caretstart="0"
         data-caretend="0"
+        data-class="input"
         className={classes.input}
       />
     </div>
