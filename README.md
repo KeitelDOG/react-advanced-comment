@@ -121,7 +121,7 @@ If you want to edit a Comment, pass an initial value with initial mentioned User
 ```
 
 ###### Styling using Custom CSS Module
-The package uses CSS Module for styling, but you can pass a custom CSS Module classes in props to override one or many classes already defined:
+The package uses CSS Module for styling, but you can pass a custom CSS Module classes in props to override one or many classes already defined. The class names are in Documentation and reference in HTML tags as `data-class` like `<img data-class="avatarImage" />`:
 
 `Input.module.css`:
 ```css
@@ -196,7 +196,8 @@ For all Props, see direct link for Comment Input Documentation: https://keiteldo
 |forceDisableSubmitButton|Should the submit button be disabled no matter what?boolean|-|
 |atIconColor|Color of icon that open the Mentions liststring|-|
 |emojiIconColor|Color of icon that open the Mentions liststring|-|
-|onMentionsClose|Callback when the Mentions list is close(() =&gt; void)|-|
+|moduleClasses|A Class Module to provide to override some classes of the default Class Modules.classes: `userInputComment, authWrapper, textProgress, textCounter, inputWrapper, editableTools, toolsLeftSection, toolsRightSection, tool, toolClickable, mentionsContainer, emojiPickerContainer, submit`. { [key: string]: any; }|css module|
+|onMentionsClose|Callback when the Mentions list is close(() => void)|-|
 
 
 #### 🗣️ Mentions
