@@ -60,7 +60,7 @@ export default function Mentions(props : MentionsProps) {
               onClick={() => handleMentionSelected(user)}
             >
               {user.image && (
-                <Avatar user={user} size={32} />
+                <Avatar user={user} size={32} showBadge={false} />
               )}
               <span data-class="mentionText" className={classes.mentionText}>{user.name}</span>
             </li>

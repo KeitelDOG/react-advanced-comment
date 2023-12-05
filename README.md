@@ -1,7 +1,9 @@
 ## react-advanced-comment
 A React library for commenting with advanced features using contenteditable div mechanism, that supports mentions and emoji interactions.
 
-<img width="480" alt="EmojiMart" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/419ab8f9-9b01-4906-b893-f526b609ac30">
+<div align="center" style="border: 1px solid #eee;">
+<img width="480" alt="Advanced React Comment" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/4a70198f-cc47-444e-ae2e-f849bfc0be3e">
+</div>
 
 <a href="https://keiteldog.github.io/react-advanced-comment/">Documentation, Demo & Playground</a> (built with Storybook)
 
