@@ -20,7 +20,7 @@ export interface AvatarProps {
 
   /**
    * show colored badge at bottom right corner
-   * @default false
+   * @default true
    */
   showBadge?: boolean,
 
@@ -41,7 +41,7 @@ export default function Avatar(props: AvatarProps) {
     user,
     guestName = 'Gst',
     size = 38,
-    showBadge = false,
+    showBadge = true,
     badgeColor= 'green',
     moduleClasses
   } = props;
