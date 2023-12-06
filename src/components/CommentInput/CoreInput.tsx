@@ -45,6 +45,9 @@ export type BaseInputProps = {
   */
   tagColor?: string,
 
+  /** clear input by passing any number greater than zero. You can increment for consecutive clearance. */
+  clear?: number,
+
   /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively.
    *
    *  N.B. **A Default RegExp is already provided**
@@ -156,6 +159,7 @@ export default function CoreInput(props: CoreInputProps) {
     tagColor = '#358856',
     emoji,
     mentionedUser,
+    clear = 0,
     sending = false,
     moduleClasses,
     mentionParseRegex = /{{[0-9]*}}/m,
@@ -184,12 +188,14 @@ export default function CoreInput(props: CoreInputProps) {
     const end = parseInt(editable.getAttribute('data-caretend') as string) || 0;
     return { start, end };
   }
+
   const setCaretValue = (crt: Caret) => {
     // Save caret Position because we lose it when using Emoji and Mention selectors
     const editable: HTMLDivElement = ref.current as HTMLDivElement;
     editable.setAttribute('data-caretstart', crt.start.toString());
     const end = editable.setAttribute('data-caretend', crt.end.toString());
   }
+
   const handleContentChange = () : void => {
     // handle content change
     const content: string = getContent();
@@ -486,7 +492,7 @@ export default function CoreInput(props: CoreInputProps) {
 
   React.useEffect(() => {
     const editable: HTMLDivElement = ref.current as HTMLDivElement;
-    if (initialValue && initialValue.length) {
+    if (initialValue) {
       const parts : ContentPart[] = helper.formatContent(
         initialValue,
         initialMentionedUsers,
@@ -521,6 +527,14 @@ export default function CoreInput(props: CoreInputProps) {
       handleContentChange();
     }
   }, []);
+
+  React.useEffect(() => {
+    if (clear && clear > 0) {
+      const editable: HTMLDivElement = ref.current as HTMLDivElement;
+      editable.innerHTML = '';
+      handleContentChange();
+    }
+  }, [clear]);
 
   React.useEffect(() => {
     const editable: HTMLDivElement = ref.current as HTMLDivElement;

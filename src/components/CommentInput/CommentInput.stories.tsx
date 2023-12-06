@@ -33,7 +33,7 @@ I like the new App you made {{3}} 👍, pretty nice.`;
 export const MainCommentInput = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 MainCommentInput.args = {
-  users: users,
+  users,
   minLength: 1,
   maxLength: 128,
   initialValue,
