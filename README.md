@@ -23,6 +23,7 @@ Each feature has multiple components that you can use on their own and combine t
 - [🗣️ Mentions](#-mentions)
 - [😀 Emoji Picker](#-emoji-picker)
 - [🔬 Core Input](#-core-input)
+- [🐞 Bug Fixes & Improvements](#-bug-fixes--improvements)
 
 
 #### 🔑 Installation
@@ -67,8 +68,9 @@ export default function CommentInputTest(props) {
 
   return (
     <CommentInput
-      // ensure that users is not empty array
-      // use a key to renrender if necessary
+      // as the User scroll comments,
+      // you can pass more and more users to be availabe in mentions,
+      // the Input will update and add them on the go.
       users={usersData}
       minLength={1}
       maxLength={256}
@@ -395,3 +397,11 @@ export default function CustomCommentInput() {
 ```
 
 For all Props, see direct link for Core Input Documentation: https://keiteldog.github.io/react-advanced-comment/path=/docs/react-advanced-comment-coreinput--docs
+
+#### 🐞 Bug Fixes & Improvements
+
+Latest changes as of 6 Dec 2023
+
+- Fix empty face at left of CommentInput when Avatar is not displayed
+- Add an Option to clear the CommentInput and CoreInput at any time by passing a `clear` prop greater than zero.
+- Allow input event listeners to be removed and re-added with update users list passed in props.

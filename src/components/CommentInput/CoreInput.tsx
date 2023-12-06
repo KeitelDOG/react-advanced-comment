@@ -539,13 +539,12 @@ export default function CoreInput(props: CoreInputProps) {
   React.useEffect(() => {
     const editable: HTMLDivElement = ref.current as HTMLDivElement;
     // EVENT LISTENERS ARE SET ONLY ONCE
-    if (!initialized) {
       // plaintext-only browser support: https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable
       // editable.setAttribute('contenteditable', 'plaintext-only');
       editable.setAttribute('contenteditable', 'true');
-      editable.addEventListener('focus', function () {
-        this.style.outline = '0px solid transparent';
-      });
+      const onFocus = () => {
+        editable.style.outline = '0px solid transparent';
+      }
 
       // ON KEYDOWN ------------------------------
       const onKeydown = (event: KeyboardEvent) => {
@@ -568,14 +567,12 @@ export default function CoreInput(props: CoreInputProps) {
           return false;
         }
       };
-      editable.addEventListener('keydown', onKeydown);
 
       // ON CLICK ----
       const onClick = () => {
         const crt = getCaretPosition();
         setCaretValue(crt);
       };
-      editable.addEventListener('click', onClick);
 
       // ON INPUT ----
       const onInput = (event: Event) => {
@@ -681,17 +678,20 @@ export default function CoreInput(props: CoreInputProps) {
           onMentionMatch([]);
         }
       };
+
+      editable.addEventListener('focus', onFocus);
+      editable.addEventListener('keydown', onKeydown);
+      editable.addEventListener('click', onClick);
       editable.addEventListener('input', onInput);
 
-      // Initialize it avoid code to repeat twice and more
-      setInitialized(true);
-    }
-  }, [
-    initialized,
-    users,
-    getCaretPosition,
-    compactEditableNodes,
-  ]);
+      return () => {
+        // remove the listeners before useEffect fires again or CoreInput component will unmount
+        editable.removeEventListener('input', onInput)
+        editable.removeEventListener('focus', onFocus);
+        editable.removeEventListener('keydown', onKeydown);
+        editable.removeEventListener('click', onClick);
+      }
+  }, [users]);
 
   React.useEffect(() => {
     /*
