@@ -34,7 +34,7 @@ export const MainCommentInput = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 MainCommentInput.args = {
   auth: users[0],
-  users: users,
+  users,
   minLength: 1,
   maxLength: 128,
   initialValue,

@@ -158,6 +158,7 @@ export default function CommentInput(props : CommentInputProps) {
     tagColor = colors.one,
     atIconColor = '#cc701e',
     emojiIconColor = '#fbbf07',
+    clear = 0,
     moduleClasses,
     mentionParseRegex,
     mentionToString,
@@ -353,6 +354,7 @@ export default function CommentInput(props : CommentInputProps) {
                 setContent(cnt);
               }
             }}
+            clear={clear}
             sending={sending}
             onSend={(cnt: string) => {
               setSending(false);
