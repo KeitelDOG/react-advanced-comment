@@ -22,9 +22,6 @@ export type RenderMentionsProps = {
 };
 
 export type CommentInputProps = BaseInputProps & {
-  /** authenticated user info if any */
-  auth?: User,
-
   /** Start showing Countdown counter from and below a certain number (including)
    * @default 30
    */
@@ -307,9 +304,11 @@ export default function CommentInput(props : CommentInputProps) {
   return (
     <div>
       <div data-class="userInputComment" className={classes.userInputComment}>
-        <div data-class="authWrapper" className={classes.authWrapper}>
-          {AvatarComponent && <AvatarComponent/>}
-        </div>
+        {AvatarComponent && (
+          <div data-class="authWrapper" className={classes.authWrapper}>
+            <AvatarComponent/>
+          </div>
+        )}
 
         <div
           data-testid="comment-input-container"
