@@ -22,9 +22,6 @@ export type RenderMentionsProps = {
 };
 
 export type CommentInputProps = BaseInputProps & {
-  /** authenticated user info if any */
-  auth?: User,
-
   /** Start showing Countdown counter from and below a certain number (including)
    * @default 30
    */
@@ -158,6 +155,7 @@ export default function CommentInput(props : CommentInputProps) {
     tagColor = colors.one,
     atIconColor = '#cc701e',
     emojiIconColor = '#fbbf07',
+    clear = 0,
     moduleClasses,
     mentionParseRegex,
     mentionToString,
@@ -306,9 +304,11 @@ export default function CommentInput(props : CommentInputProps) {
   return (
     <div>
       <div data-class="userInputComment" className={classes.userInputComment}>
-        <div data-class="authWrapper" className={classes.authWrapper}>
-          {AvatarComponent && <AvatarComponent/>}
-        </div>
+        {AvatarComponent && (
+          <div data-class="authWrapper" className={classes.authWrapper}>
+            <AvatarComponent/>
+          </div>
+        )}
 
         <div
           data-testid="comment-input-container"
@@ -353,6 +353,7 @@ export default function CommentInput(props : CommentInputProps) {
                 setContent(cnt);
               }
             }}
+            clear={clear}
             sending={sending}
             onSend={(cnt: string) => {
               setSending(false);

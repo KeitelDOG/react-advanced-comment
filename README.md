@@ -23,6 +23,7 @@ Each feature has multiple components that you can use on their own and combine t
 - [🗣️ Mentions](#-mentions)
 - [😀 Emoji Picker](#-emoji-picker)
 - [🔬 Core Input](#-core-input)
+- [🐞 Bug Fixes & Improvements](#-bug-fixes--improvements)
 
 
 #### 🔑 Installation
@@ -54,6 +55,8 @@ import {
 import emojis from '@keiteldog/react-advanced-comment/dist/json/emoji-datasource-light.json';
 
 export default function CommentInputTest(props) {
+  // a state to clear the input at any time on each new number greater than zero
+  const [clear, setClear] = React.useState(0);
   // User type is : { id: number | string, name: string, image: string }
   const auth = { id: 1, name: 'User 1', image: '/image-1-path.jpg' };
 
@@ -65,14 +68,16 @@ export default function CommentInputTest(props) {
 
   return (
     <CommentInput
-      // ensure that users is not empty array
-      // use a key to renrender if necessary
+      // as the User scroll comments,
+      // you can pass more and more users to be availabe in mentions,
+      // the Input will update and add them on the go.
       users={usersData}
       minLength={1}
       maxLength={256}
       showCounterAt={50}
       blockInputOnMaxLength={false}
       mentionsLimit={2}
+      clear={clear}
       renderAvatar={<UserAvatar user={auth} size={32} />}
       renderMentions={({ users, onMentionSelected, onClose }) => (
         <Mentions
@@ -98,6 +103,8 @@ export default function CommentInputTest(props) {
       onMentionsOpen={() => console.log('mentions opened')}
       onSend={content => {
         console.log('comment content', content);
+        // clear input if you want
+        setClear(c => c + 1);
       }}
     />
   );
@@ -163,42 +170,43 @@ For all Props, see direct link for Comment Input Documentation: https://keiteldo
 |Name|Description|Default|
 |:----|:----|:----|
 |auth|authenticated user info if anyUser|-|
-|users|Array of users to match against @ mention and filter while typing.User[]|[]|
-|minLength|Minimum characters allowing to validate the input.number|1|
-|maxLength|Maximum characters allowing to validate and block the input. 0 for no limit.number|0|
+|users|Array of users to match against @ mention and filter while typing.User[]|`[]`|
+|minLength|Minimum characters allowing to validate the input.number|`1`|
+|maxLength|Maximum characters allowing to validate and block the input. 0 for no limit.number|`0`|
 |initialValue|Pass an initial text value in the input to be displayed. Useful if User want to Edit a comment.string|-|
-|initialMentionedUsers|Initial list of Users mentioned in the initial value. Only use with initialValue prop if it contains Users.User[]|[]|
-|showCounterAt|Start showing Countdown counter from and below a certain number (including)number|30|
+|initialMentionedUsers|Initial list of Users mentioned in the initial value. Only use with initialValue prop if it contains Users.User[]|`[]`|
+|showCounterAt|Start showing Countdown counter from and below a certain number (including)number|`30`|
 |blockInputOnMaxLength|Block input from receiving new character when maxLength is reachedboolean|-|
-|mentionsLimit|How many users can be mentioned in the comments. 0 is for no limit.number|2|
+|mentionsLimit|How many users can be mentioned in the comments. 0 is for no limit.number|`2`|
 |textProgressType|Provide how to display the text Progress, circle or bar."circle""bar"|bar|
-|AvatarComponent|Component for Authenticated User Avatar in needed.(() =&gt; Element)|-|
-|renderMentions|Render the User mention list if needed. You can use internal Mentions component, or use your own component. Usage:&lt;CommentInput  renderMentions={({ users, onMentionSelected, onClose }) =&gt; (    &lt;Mentions      users={users}      onClose={onClose}      onMentionSelected={onMentionSelected}    /&gt;  )}/&gt;((props: RenderMentionsProps) =&gt; ReactNode)|-|
-|renderEmojiPicker|Render the EmojiPicker if needed. You can use internal EmojiPicker component, or use your own component. Usage:&lt;CommentInput  renderEmojiPicker={({ onEmojiSelected, onClose }) =&gt; (    &lt;EmojiPicker      emojis={emojis}      height={280}      numColumns={8}      initialCategory="emotion"      onClose={onClose}      onEmojiSelected={onEmojiSelected}    /&gt;  )}/&gt;((props: RenderEmojiPickerProps) =&gt; ReactNode)|-|
+|AvatarComponent|Component for Authenticated User Avatar in needed.(() => Element)|-|
+|renderMentions|Render the User mention list if needed. You can use internal Mentions component, or use your own component. Usage: ```<CommentInput  renderMentions={({ users, onMentionSelected, onClose }) => (    <Mentions      users={users}      onClose={onClose}      onMentionSelected={onMentionSelected}    />  )}/>((props: RenderMentionsProps) => ReactNode)```|-|
+|renderEmojiPicker|Render the EmojiPicker if needed. You can use internal EmojiPicker component, or use your own component. Usage: ```<CommentInput  renderEmojiPicker={({ onEmojiSelected, onClose }) => (    <EmojiPicker      emojis={emojis}      height={280}      numColumns={8}      initialCategory="emotion"      onClose={onClose}      onEmojiSelected={onEmojiSelected}    />  )}/>((props: RenderEmojiPickerProps) => ReactNode)```|-|
 |renderMentionsInDefaultPosition|Render the Mentions list at default position, which is absolute on top. If not you will provide your own custom styles to display itboolean|-|
 |renderEmojiPickerInDefaultPosition|Render the Picker list at default position, at bottom. If not you will provide your own custom styles to display itboolean|-|
-|onEmojiOpen|Callback when the Emoji Picker is open(() =&gt; void)|-|
-|onEmojiClose|Callback when the Emoji Picker is close(() =&gt; void)|-|
-|onMentionsOpen|Callback when the Mentions list is open(() =&gt; void)|-|
-|onSend*|Callback on sending the Content back to parent(content: string) =&gt; void|-|
-|lineColor|Bottom line color for personalisation to match your Application theme.string|#ccc in css|
-|tagColor|Color to highlight the tag for mentioned users.string|#358856|
-|moduleClasses|A Class Module to provide to override some classes of the default Class Modules.{ [key: string]: any; }|css module|
-|mentionParseRegex|When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively.N.B. A Default RegExp is already providedRegExp|'/{{[0-9]*}}/m',|
-|mentionToString|Implementation to convert mention tag to unique string that identifies the user in the comment.N.B. A Default Implementation is already provided.It is important to transform each tag in string to make the counting in total text length. For example, if User(10) is Keitel Jovin:&lt;div&gt;Hello &lt;span data-id="10"&gt;Keitel Jovin&lt;/span&gt; will be transfom to "Hello {{10}}". with mentionToString(10); // =&gt; {{10}}And "Hello {{10}}" will be only 12 chars, instead of 18 chars in "Hello Keitel Jovin" provided by the HTML Div input. An example of algorithm:mentionToString = (id: number \|string) : string =&gt; { return `{{${id}}}`;}((id: string \|number) =&gt; string)|-|
-|parseMentionId|Implementation to parse the mention string to ID value.N.B. A Default Implementation is already provided.When editing, an initial value can be passed. If that value contains mentions, like: Hello {{10}} and {{747}}.You provide a regex like /{{[0-9]*}}/m and a match is found: {{10}}. Now you need a function to tell the input how to retrieve the ID in it.((stringWithID: string) =&gt; string \|number)|-|
-|onLengthChange|Callback on each input and change to track the length of comment outside the component((length: number) =&gt; void)|-|
-|onContentChange|Callback on each input and change to track the whole content outside the component. Might be heavy if text is huge.((content: string) =&gt; void)|-|
+|onEmojiOpen|Callback when the Emoji Picker is open(() => void)|-|
+|onEmojiClose|Callback when the Emoji Picker is close(() => void)|-|
+|onMentionsOpen|Callback when the Mentions list is open(() => void)|-|
+|onSend*|Callback on sending the Content back to parent(content: string) => void|-|
+|lineColor|Bottom line color for personalisation to match your Application theme.string|`#ccc in css`|
+|tagColor|Color to highlight the tag for mentioned users. `string` |`#358856`|
+|clear|clear input by passing any number greater than zero. You can increment for consecutive clearance. `number`|`0`|
+|moduleClasses|A Class Module to provide to override some classes of the default Class Modules. `{ [key: string]: any; }`|css module|
+|mentionParseRegex|When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively. N.B. A Default RegExp is already providedRegExp|`/{{[0-9]*}}/m`,|
+|mentionToString|Implementation to convert mention tag to unique string that identifies the user in the comment.N.B. A Default Implementation is already provided.It is important to transform each tag in string to make the counting in total text length. For example, if User(10) is Keitel Jovin:<div>Hello <span data-id="10">Keitel Jovin</span> will be transfom to  `"Hello {{10}}"`. with `mentionToString(10); // => {{10}}` And `"Hello {{10}}"` will be only 12 chars, instead of 18 chars in "Hello Keitel Jovin" provided by the HTML Div input. An example of algorithm: ``` mentionToString = (id: number \|string) : string => { return `{{${id}}}`;}((id: string \|number) => string)```|-|
+|parseMentionId|Implementation to parse the mention string to ID value.N.B. A Default Implementation is already provided.When editing, an initial value can be passed. If that value contains mentions, like: `"Hello {{10}} and {{747}}"`.You provide a regex like `/{{[0-9]*}}/m` and a match is found: {{10}}. Now you need a function to tell the input how to retrieve the ID in it.((stringWithID: string) => string \|number)|-|
+|onLengthChange|Callback on each input and change to track the length of comment outside the component((length: number) => void)|-|
+|onContentChange|Callback on each input and change to track the whole content outside the component. Might be heavy if text is huge.((content: string) => void)|-|
 |textProgressColors|4 colors to vary the color of the text length progression{ one: string; two: string; three: string; four: string; }|-|
-|EmojiIconComponent|Render the Icon responsible to open the EmojiPicker if needed. An Icon is rendered by default.(() =&gt; Element)|-|
-|AtIconComponent|Component for icon responsible to open the Mentions list if needed. An Icon is rendered by default.(() =&gt; Element)|-|
-|renderSubmitButton|Render a custom Submit Button. A button is rendered by default((props: { submitDisabled: boolean; }) =&gt; ReactNode)|-|
+|EmojiIconComponent|Render the Icon responsible to open the EmojiPicker if needed. An Icon is rendered by default.(() => Element)|-|
+|AtIconComponent|Component for icon responsible to open the Mentions list if needed. An Icon is rendered by default.(() => Element)|-|
+|renderSubmitButton|Render a custom Submit Button. A button is rendered by default((props: { submitDisabled: boolean; }) => ReactNode)|-|
 |submitButtonText|Custom Text that should appear in Submit Button. Default: 'Send'string|-|
 |submitButtonColor|Custom Color of the Submit Button. Default: some green colorstring|-|
 |forceDisableSubmitButton|Should the submit button be disabled no matter what?boolean|-|
 |atIconColor|Color of icon that open the Mentions liststring|-|
 |emojiIconColor|Color of icon that open the Mentions liststring|-|
-|moduleClasses|A Class Module to provide to override some classes of the default Class Modules.classes: `userInputComment, authWrapper, textProgress, textCounter, inputWrapper, editableTools, toolsLeftSection, toolsRightSection, tool, toolClickable, mentionsContainer, emojiPickerContainer, submit`. { [key: string]: any; }|css module|
+|moduleClasses|A Class Module to provide to override some classes of the default Class Modules.classes: `userInputComment, authWrapper, textProgress, textCounter, inputWrapper, editableTools, toolsLeftSection, toolsRightSection, tool, toolClickable, mentionsContainer, emojiPickerContainer, submit`. `{ [key: string]: any; }`|`css module`|
 |onMentionsClose|Callback when the Mentions list is close(() => void)|-|
 
 
@@ -323,6 +331,7 @@ export default function CustomCommentInput() {
   const [textLength, setTexLength] = React.useState(0);
   const [emoji, setEmoji] = React.useState();
   const [mentionedUser, setMentionedUser] = React.useState();
+  const [clear, setClear] = React.useState(0);
 
   // 0 for infinite
   const maxLength = 256;
@@ -341,6 +350,7 @@ export default function CustomCommentInput() {
         mentionsLimit={mentionsLimit}
         lineColor="green"
         tagColor="green"
+        clear={clear}
         // regex, parse and to string to customize mention tags conversion to string. See Docs
         // mentionParseRegex=\RegEx\
         // mentionToString={() => {}}
@@ -377,12 +387,21 @@ export default function CustomCommentInput() {
           onSend(cnt);
         }}
       />
-      <div><span onClick={() => setEmoji('🐶')}>Click to add 🐶 Emoji</span></div>
-      <div><span onClick={() => setMentionedUser(usersData[0])}>Click to mention User 2</span></div>
-      <div><span onClick={() => setSending(true)}>Click to send</span></div>
+      <div><button onClick={() => setEmoji('🐶')}>Add 🐶 Emoji</button></div>
+      <div><button onClick={() => setMentionedUser(usersData[0])}>Mention User 2</button></div>
+      <div><button onClick={() => setSending(true)}>Send</button></div>
+      <div><button onClick={() => setClear(c => c + 1)}>Clear</button></div>
     </div>
   );
 }
 ```
 
 For all Props, see direct link for Core Input Documentation: https://keiteldog.github.io/react-advanced-comment/path=/docs/react-advanced-comment-coreinput--docs
+
+#### 🐞 Bug Fixes & Improvements
+
+Latest changes as of 6 Dec 2023
+
+- Fix empty face at left of CommentInput when Avatar is not displayed
+- Add an Option to clear the CommentInput and CoreInput at any time by passing a `clear` prop greater than zero.
+- Allow input event listeners to be removed and re-added with update users list passed in props.

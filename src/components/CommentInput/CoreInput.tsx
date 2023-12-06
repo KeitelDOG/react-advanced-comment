@@ -45,6 +45,9 @@ export type BaseInputProps = {
   */
   tagColor?: string,
 
+  /** clear input by passing any number greater than zero. You can increment for consecutive clearance. */
+  clear?: number,
+
   /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively.
    *
    *  N.B. **A Default RegExp is already provided**
@@ -156,6 +159,7 @@ export default function CoreInput(props: CoreInputProps) {
     tagColor = '#358856',
     emoji,
     mentionedUser,
+    clear = 0,
     sending = false,
     moduleClasses,
     mentionParseRegex = /{{[0-9]*}}/m,
@@ -184,12 +188,14 @@ export default function CoreInput(props: CoreInputProps) {
     const end = parseInt(editable.getAttribute('data-caretend') as string) || 0;
     return { start, end };
   }
+
   const setCaretValue = (crt: Caret) => {
     // Save caret Position because we lose it when using Emoji and Mention selectors
     const editable: HTMLDivElement = ref.current as HTMLDivElement;
     editable.setAttribute('data-caretstart', crt.start.toString());
     const end = editable.setAttribute('data-caretend', crt.end.toString());
   }
+
   const handleContentChange = () : void => {
     // handle content change
     const content: string = getContent();
@@ -486,7 +492,7 @@ export default function CoreInput(props: CoreInputProps) {
 
   React.useEffect(() => {
     const editable: HTMLDivElement = ref.current as HTMLDivElement;
-    if (initialValue && initialValue.length) {
+    if (initialValue) {
       const parts : ContentPart[] = helper.formatContent(
         initialValue,
         initialMentionedUsers,
@@ -523,15 +529,22 @@ export default function CoreInput(props: CoreInputProps) {
   }, []);
 
   React.useEffect(() => {
+    if (clear && clear > 0) {
+      const editable: HTMLDivElement = ref.current as HTMLDivElement;
+      editable.innerHTML = '';
+      handleContentChange();
+    }
+  }, [clear]);
+
+  React.useEffect(() => {
     const editable: HTMLDivElement = ref.current as HTMLDivElement;
     // EVENT LISTENERS ARE SET ONLY ONCE
-    if (!initialized) {
       // plaintext-only browser support: https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable
       // editable.setAttribute('contenteditable', 'plaintext-only');
       editable.setAttribute('contenteditable', 'true');
-      editable.addEventListener('focus', function () {
-        this.style.outline = '0px solid transparent';
-      });
+      const onFocus = () => {
+        editable.style.outline = '0px solid transparent';
+      }
 
       // ON KEYDOWN ------------------------------
       const onKeydown = (event: KeyboardEvent) => {
@@ -554,14 +567,12 @@ export default function CoreInput(props: CoreInputProps) {
           return false;
         }
       };
-      editable.addEventListener('keydown', onKeydown);
 
       // ON CLICK ----
       const onClick = () => {
         const crt = getCaretPosition();
         setCaretValue(crt);
       };
-      editable.addEventListener('click', onClick);
 
       // ON INPUT ----
       const onInput = (event: Event) => {
@@ -667,17 +678,20 @@ export default function CoreInput(props: CoreInputProps) {
           onMentionMatch([]);
         }
       };
+
+      editable.addEventListener('focus', onFocus);
+      editable.addEventListener('keydown', onKeydown);
+      editable.addEventListener('click', onClick);
       editable.addEventListener('input', onInput);
 
-      // Initialize it avoid code to repeat twice and more
-      setInitialized(true);
-    }
-  }, [
-    initialized,
-    users,
-    getCaretPosition,
-    compactEditableNodes,
-  ]);
+      return () => {
+        // remove the listeners before useEffect fires again or CoreInput component will unmount
+        editable.removeEventListener('input', onInput)
+        editable.removeEventListener('focus', onFocus);
+        editable.removeEventListener('keydown', onKeydown);
+        editable.removeEventListener('click', onClick);
+      }
+  }, [users]);
 
   React.useEffect(() => {
     /*
