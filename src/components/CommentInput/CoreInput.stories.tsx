@@ -26,6 +26,7 @@ export const MainCoreInput = Template.bind({});
 MainCoreInput.args = {
   users: users.slice(1),
   mentionsLimit: 2,
+  placeholder: 'Give your opinion',
   onEmojiSet: () => { console.log('emoji set') },
   onMentionedUserSet: () => { console.log('mentioned user set') },
   onMentionMatch: (users: User[]) => { console.log('mention matched', users) },

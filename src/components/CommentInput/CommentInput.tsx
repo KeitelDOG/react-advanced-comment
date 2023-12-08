@@ -92,13 +92,19 @@ export type CommentInputProps = BaseInputProps & {
   /** Render a custom Submit Button. A button is rendered by default */
   renderSubmitButton?(props: { submitDisabled: boolean }) : React.ReactNode,
 
-  /** Custom Text that should appear in Submit Button. Default: 'Send' */
+  /** Custom Text that should appear in Submit Button.
+   * @default Send
+  */
   submitButtonText?: string,
 
-  /** Custom Color of the Submit Button. Default: some green color */
+  /** Custom Color of the Submit Button.
+   * @default #358856
+  */
   submitButtonColor?: string,
 
-  /** Should the submit button be disabled no matter what? */
+  /** Should the submit button be disabled no matter what?
+   * @default false
+  */
   forceDisableSubmitButton?: boolean,
 
   /** Color of icon that open the Mentions list */
@@ -133,6 +139,7 @@ export default function CommentInput(props : CommentInputProps) {
     users = [],
     minLength = 1,
     maxLength = 0,
+    placeholder,
     initialValue = '',
     initialMentionedUsers = [],
     showCounterAt = 30,
@@ -324,6 +331,7 @@ export default function CommentInput(props : CommentInputProps) {
             users={renderMentions ? users : []}
             minLength={minLength}
             maxLength={blockInputOnMaxLength ? maxLength : 0 }
+            placeholder={placeholder}
             initialValue={initialValue}
             initialMentionedUsers={initialMentionedUsers}
             mentionsLimit={mentionsLimit}

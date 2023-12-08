@@ -20,6 +20,9 @@ export type BaseInputProps = {
   */
   maxLength?: number,
 
+  /** A placeholder text to display. */
+  placeholder?: string,
+
   /** Pass an initial text value in the input to be displayed. Useful if User want to Edit a comment.
    * @default
    */
@@ -152,6 +155,7 @@ export default function CoreInput(props: CoreInputProps) {
     users = [],
     minLength = 1,
     maxLength = 0,
+    placeholder,
     initialValue = '',
     initialMentionedUsers = [],
     mentionsLimit = 2,
@@ -904,6 +908,7 @@ export default function CoreInput(props: CoreInputProps) {
         data-caretstart="0"
         data-caretend="0"
         data-class="input"
+        placeholder={placeholder}
         className={classes.input}
       />
     </div>

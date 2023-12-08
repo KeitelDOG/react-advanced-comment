@@ -13,4 +13,8 @@
   display: inline-block;
   overflow-y: auto;
   outline: 0px solid transparent;
+  &:empty:before {
+    content: attr(placeholder);
+    color: #aaa;
+  };
 };
