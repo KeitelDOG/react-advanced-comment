@@ -36,6 +36,7 @@ MainCommentInput.args = {
   users,
   minLength: 1,
   maxLength: 128,
+  placeholder: 'Give your opinion',
   initialValue,
   initialMentionedUsers: [users[1], users[2]],
   showCounterAt: 30,
