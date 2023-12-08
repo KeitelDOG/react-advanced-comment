@@ -32,6 +32,10 @@ export type Emoji = {
   [key: string]: any,
 };
 
+export type CategoryIconsProps = {
+  [key in CategoryName] : () => React.JSX.Element
+};
+
 export type EmojiPickerProps = {
   /** Array of Emoji with standard attributes:
    * (name, unified, short_name, short_name, category, sort_order, added_in)
@@ -47,7 +51,7 @@ export type EmojiPickerProps = {
   initialCategory?: CategoryName,
 
   /** Custom category icons to render */
-  categoryIcons?: { [key in CategoryName] : () => React.JSX.Element },
+  categoryIcons?: CategoryIconsProps,
 
   /** Whether to render a close icon or not.
    * @default true
