@@ -3,7 +3,7 @@ import { User } from '../Mentions/Mentions';
 import { combineClasses } from '../helpers/combineClasses';
 import defaultClasses from './Avatar.module.css';
 
-export interface AvatarProps {
+export type AvatarProps = {
   /** User if any to show in the Avatar */
   user?: User,
 
