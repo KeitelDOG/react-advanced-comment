@@ -14,3 +14,9 @@
   overflow-y: auto;
   outline: 0px solid transparent;
 };
+
+.input &:empty:before {
+  content: attr(placeholder);
+  color: grey;
+  display: inline-block;
+};
