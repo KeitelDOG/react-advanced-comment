@@ -1,4 +1,10 @@
 export { default as Avatar } from './Avatar';
-export { default as Mentions, User } from './Mentions';
-export { default as CommentInput, CoreInput, RenderEmojiPickerProps, RenderMentionsProps } from './CommentInput';
-export { default as EmojiPicker, EmojiCell, EmojiTabs, Emoji, CategoryIconsProps, CategoryName } from './Emoji';
+export { default as Mentions } from './Mentions';
+export { default as CommentInput, CoreInput } from './CommentInput';
+export { default as EmojiPicker } from './Emoji';
+
+// export types
+export { User } from './Mentions/Mentions';
+export { RenderEmojiPickerProps, RenderMentionsProps } from './CommentInput/CommentInput';
+export { Emoji, CategoryIconsProps } from './Emoji/EmojiPicker'
+export { CategoryName } from './Emoji/emojiCategories';
