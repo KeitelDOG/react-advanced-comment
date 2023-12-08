@@ -20,6 +20,7 @@
   "files": [
     "dist"
   ],
+  "types": "dist/esm/index.d.ts",
   "bugs": {
     "url": "https://github.com/KeitelDOG/react-advanced-comment/issues"
   },
