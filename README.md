@@ -50,7 +50,7 @@ import {
   CommentInput,
   EmojiPicker,
   Mentions,
-  UserAvatar,
+  Avatar,
 } from '@keiteldog/react-advanced-comment';
 import emojis from '@keiteldog/react-advanced-comment/dist/json/emoji-datasource-light.json';
 
@@ -79,7 +79,7 @@ export default function CommentInputTest(props) {
       blockInputOnMaxLength={false}
       mentionsLimit={2}
       clear={clear}
-      AvatarComponent={() => <UserAvatar user={auth} size={32} />}
+      AvatarComponent={() => <Avatar user={auth} size={32} />}
       renderMentions={({ users, onMentionSelected, onClose }) => (
         <Mentions
           users={users}
