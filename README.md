@@ -403,6 +403,7 @@ For all Props, see direct link for Core Input Documentation: https://keiteldog.g
 #### 🐞 Bug Fixes & Improvements
 - 9 Dec 2023
   - Add React 18 as peer depencies
+  - CommentInput root div has now a CSS className for styling
 - 8 Dec 2023
   - Add React 16 and 17 as peer dependencies
   - Add Placeholder option in Input
