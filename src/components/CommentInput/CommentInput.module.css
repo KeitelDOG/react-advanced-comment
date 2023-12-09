@@ -1,3 +1,6 @@
+.commentInputWrapper {
+  width: 100%;
+}
 .userInputComment {
   display: flex;
   flex-direction: row;

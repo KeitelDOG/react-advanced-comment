@@ -114,7 +114,7 @@ export type CommentInputProps = BaseInputProps & {
   emojiIconColor?: string,
 
   /** A Class Module to provide to override some classes of the default Class Modules.
-   *  classes: `userInputComment, authWrapper, textProgress, textCounter, inputWrapper, editableTools, toolsLeftSection, toolsRightSection, tool, toolClickable, mentionsContainer, emojiPickerContainer, submit`
+   *  classes: `commentInputWrapper, userInputComment, authWrapper, textProgress, textCounter, inputWrapper, editableTools, toolsLeftSection, toolsRightSection, tool, toolClickable, mentionsContainer, emojiPickerContainer, submit`
    * @default css module
   */
   moduleClasses?: { [key : string] : any },
@@ -309,7 +309,7 @@ export default function CommentInput(props : CommentInputProps) {
   }
 
   return (
-    <div>
+    <div data-class="commentInputWrapper" className={classes.commentInputWrapper}>
       <div data-class="userInputComment" className={classes.userInputComment}>
         {AvatarComponent && (
           <div data-class="authWrapper" className={classes.authWrapper}>
