@@ -56,10 +56,10 @@
 }
 .closeIcon {
   margin: 0;
-  height: 18px;
-  width: 18px;
+  height: 20px;
+  width: 20px;
   cursor: pointer;
-  border: 2px solid #aaa;
+  border: 1px solid #aaa;
 }
 .emojiContainer {
   flex: 1;
