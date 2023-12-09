@@ -402,7 +402,7 @@ For all Props, see direct link for Core Input Documentation: https://keiteldog.g
 
 #### 🐞 Bug Fixes & Improvements
 - 9 Dec 2023
-  - Add React 18 as peer depencies
+  - Add React 18 as peer dependencies
   - CommentInput root div has now a CSS className for styling
 - 8 Dec 2023
   - Add React 16 and 17 as peer dependencies
@@ -410,6 +410,6 @@ For all Props, see direct link for Core Input Documentation: https://keiteldog.g
 - 7 Dec 2023
   - Export Typescript Types in package root
 - 6 Dec 2023
-  - Fix empty face at left of CommentInput when Avatar is not displayed
+  - Fix empty space at left of CommentInput when Avatar is not displayed
   - Add an Option to clear the CommentInput and CoreInput at any time by passing a `clear` prop greater than zero.
   - Allow input event listeners to be removed and re-added with update users list passed in props.
