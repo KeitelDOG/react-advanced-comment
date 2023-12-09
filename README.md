@@ -79,7 +79,7 @@ export default function CommentInputTest(props) {
       blockInputOnMaxLength={false}
       mentionsLimit={2}
       clear={clear}
-      renderAvatar={<UserAvatar user={auth} size={32} />}
+      AvatarComponent={() => <UserAvatar user={auth} size={32} />}
       renderMentions={({ users, onMentionSelected, onClose }) => (
         <Mentions
           users={users}
@@ -208,7 +208,7 @@ For all Props, see direct link for Comment Input Documentation: https://keiteldo
 |forceDisableSubmitButton|Should the submit button be disabled no matter what? `boolean`|`false`|
 |atIconColor|Color of icon that open the Mentions liststring|-|
 |emojiIconColor|Color of icon that open the Mentions list. `string`|-|
-|moduleClasses|A Class Module to provide to override some classes of the default Class Modules.classes: `userInputComment, authWrapper, textProgress, textCounter, inputWrapper, editableTools, toolsLeftSection, toolsRightSection, tool, toolClickable, mentionsContainer, emojiPickerContainer, submit`. `{ [key: string]: any; }`|`css module`|
+|moduleClasses|A Class Module to provide to override some classes of the default Class Modules.classes: `commentInputWrapper, userInputComment, authWrapper, textProgress, textCounter, inputWrapper, editableTools, toolsLeftSection, toolsRightSection, tool, toolClickable, mentionsContainer, emojiPickerContainer, submit`. `{ [key: string]: any; }`|`css module`|
 |onMentionsClose|Callback when the Mentions list is close. `(() => void)`|-|
 
 
@@ -401,8 +401,11 @@ export default function CustomCommentInput() {
 For all Props, see direct link for Core Input Documentation: https://keiteldog.github.io/react-advanced-comment/path=/docs/react-advanced-comment-coreinput--docs
 
 #### 🐞 Bug Fixes & Improvements
-
+- 9 Dec 2023
+  - Add React 18 as peer depencies
+  - CommentInput root div has now a CSS className for styling
 - 8 Dec 2023
+  - Add React 16 and 17 as peer dependencies
   - Add Placeholder option in Input
 - 7 Dec 2023
   - Export Typescript Types in package root
