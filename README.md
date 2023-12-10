@@ -401,6 +401,8 @@ export default function CustomCommentInput() {
 For all Props, see direct link for Core Input Documentation: https://keiteldog.github.io/react-advanced-comment/path=/docs/react-advanced-comment-coreinput--docs
 
 #### 🐞 Bug Fixes & Improvements
+- 10 Dec 2023
+  - Keep main Components function name in distributed codes. `CommentInput, CoreInput, EmojiPicker, Mentions, Avatar`. Their name will appear in Shallow test for example as `<CommentInput ...>` instead of `<Component ... />`.
 - 9 Dec 2023
   - Add React 18 as peer dependencies
   - CommentInput root div has now a CSS className for styling
