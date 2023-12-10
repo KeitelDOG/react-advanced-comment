@@ -15,7 +15,7 @@ export default {
   title: 'React Advanced Comment/CommentInput',
   component: CommentInput,
   tags: ['autodocs'],
-} as Meta<typeof CommentInput>;
+};
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: StoryFn<typeof CommentInput> = (args) => {
@@ -30,7 +30,7 @@ const initialValue = `Hey {{2}} well done 😃.
 
 I like the new App you made {{3}} 👍, pretty nice.`;
 
-export const MainCommentInput = Template.bind({});
+export const MainCommentInput: Meta<typeof CommentInput> = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 MainCommentInput.args = {
   users,
