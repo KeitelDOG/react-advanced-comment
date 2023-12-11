@@ -402,6 +402,7 @@ For all Props, see direct link for Core Input Documentation: https://keiteldog.g
 
 #### 🐞 Bug Fixes & Improvements
 - 10 Dec 2023
+  - Keep SVG Components function name for `Emoticon, At`. Useful for testing with Enzyme shallow rendering.
   - Keep main Components function name in distributed codes. `CommentInput, CoreInput, EmojiPicker, Mentions, Avatar`. Their name will appear in Shallow test for example as `<CommentInput ...>` instead of `<Component ... />`.
 - 9 Dec 2023
   - Add React 18 as peer dependencies

@@ -10,12 +10,12 @@ export default {
   title: 'React Advanced Comment/EmojiPicker',
   component: EmojiPickerComp,
   tags: ['autodocs'],
-} as Meta<typeof EmojiPickerComp>;
+};
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: StoryFn<typeof EmojiPickerComp> = (args) => <EmojiPickerComp {...args} />;
 
-export const EmojiPicker = Template.bind({});
+export const EmojiPicker: Meta<typeof EmojiPickerComp> = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 EmojiPicker.args = {
   emojis,

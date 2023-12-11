@@ -10,7 +10,7 @@ export default {
   title: 'React Advanced Comment/CoreInput',
   component: CoreInput,
   tags: ['autodocs']
-} as Meta<typeof CoreInput>;
+};
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: StoryFn<typeof CoreInput> = (args) => {
@@ -21,7 +21,7 @@ const Template: StoryFn<typeof CoreInput> = (args) => {
   );
 };
 
-export const MainCoreInput = Template.bind({});
+export const MainCoreInput: Meta<typeof CoreInput> = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 MainCoreInput.args = {
   users: users.slice(1),
