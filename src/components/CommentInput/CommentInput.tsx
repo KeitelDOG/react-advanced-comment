@@ -163,6 +163,7 @@ export default function CommentInput(props : CommentInputProps) {
     atIconColor = '#cc701e',
     emojiIconColor = '#fbbf07',
     clear = 0,
+    contentType = 'string',
     moduleClasses,
     mentionParseRegex,
     mentionToString,
@@ -337,6 +338,7 @@ export default function CommentInput(props : CommentInputProps) {
             mentionsLimit={mentionsLimit}
             lineColor={lineColor}
             tagColor={tagColor}
+            contentType={contentType}
             mentionParseRegex={mentionParseRegex}
             mentionToString={mentionToString}
             parseMentionId={parseMentionId}

@@ -47,9 +47,7 @@ MainCommentInput.args = {
   // emojiIconColor: 'blue',
   // textProgressColors: { one: 'green', two: 'orange', three: 'orange', four: 'red' },
   textProgressType: 'circle',
-  // AvatarComponent: (
-  //   <Avatar user={users[0]} size={32} />
-  // ),
+  contentType: 'string',
   AvatarComponent: () => <Avatar user={users[0]} size={32} />,
   // EmojiIconComponent: () => <Emotion height={24} width={24} fill="red" />,
   // AtIconComponent: () => <img src={atIcon} />,
