@@ -1,9 +1,5 @@
 import { User } from '../Mentions/Mentions';
-
-export type ContentPart = {
-  type: 'text' | 'newline' | 'mention',
-  data: User | string,
-};
+import { ContentPart } from './CoreInput';
 
 export type ParseMention = (stringWithId: string) => number | string;
 

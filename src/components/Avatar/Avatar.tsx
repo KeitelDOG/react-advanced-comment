@@ -77,20 +77,18 @@ export default function Avatar(props: AvatarProps) {
   }
 
   return (
-    <div>
-      <div data-class="avatarWrapper" className={classes.avatarWrapper}>
-        <div title={user.name}>{userView}</div>
-        {showBadge && (
-          <div data-class="badgeWrapper" className={classes.badgeWrapper}>
-            <div
-              data-testid="avatar-badge"
-              data-class="badge"
-              className={classes.badge}
-              style={{ backgroundColor: badgeColor }}
-            />
-          </div>
-        )}
-      </div>
+    <div data-class="avatarWrapper" className={classes.avatarWrapper}>
+      <div title={user.name}>{userView}</div>
+      {showBadge && (
+        <div data-class="badgeWrapper" className={classes.badgeWrapper}>
+          <div
+            data-testid="avatar-badge"
+            data-class="badge"
+            className={classes.badge}
+            style={{ backgroundColor: badgeColor }}
+          />
+        </div>
+      )}
     </div>
   );
 };

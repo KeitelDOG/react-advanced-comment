@@ -1,0 +1,24 @@
+.showMoreTextWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.fullContent {
+  display: inline-block;
+}
+.clampedContent {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.anchorWrapper {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+}
+.anchor {
+  font-weight: bold;
+  font-size: 14px;
+  color: #f49004;
+}

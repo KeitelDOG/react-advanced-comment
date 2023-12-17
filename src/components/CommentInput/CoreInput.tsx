@@ -4,13 +4,35 @@ import defaultClasses from './CoreInput.module.css';
 import { User } from '../Mentions/Mentions';
 import {
   formatContent,
-  ContentPart,
   defaultMentionRegex,
   defaultParseMention,
   defaultMentionToString
 } from './helper';
 
-export type BaseInputProps = {
+export type ContentPart = {
+  type: 'text' | 'newline' | 'mention',
+  data: User | string,
+};
+
+export type ParseMentionProps = {
+  /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively.
+   *
+   *  N.B. **A Default RegExp is already provided**
+   * @default '/{{[0-9]*}}/m',
+   */
+  mentionParseRegex?: RegExp,
+
+  /** Implementation to parse the mention string to ID value.
+   *
+   *  N.B. **A Default Implementation is already provided**.
+   *
+   *  When editing, an initial value can be passed. If that value contains mentions, like: `Hello {{10}} and {{747}}.`
+   *  You provide a regex like /{{[0-9]*}}/m and a match is found: {{10}}. Now you need a function to tell the input how to retrieve the ID in it.
+   */
+  parseMentionId?(stringWithID : string) : number | string,
+}
+
+export type BaseInputProps = ParseMentionProps & {
   /** Array of users to match against @ mention and filter while typing.
    * @default []
    */
@@ -62,13 +84,6 @@ export type BaseInputProps = {
   */
   contentType?: 'string' | 'parts',
 
-  /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively.
-   *
-   *  N.B. **A Default RegExp is already provided**
-   * @default '/{{[0-9]*}}/m',
-   */
-  mentionParseRegex?: RegExp,
-
   /** Implementation to convert mention tag to unique string that identifies the user in the comment.
    *
    *  N.B. **A Default Implementation is already provided**.
@@ -85,15 +100,6 @@ export type BaseInputProps = {
    * ```
   */
   mentionToString?(id : number | string) : string,
-
-  /** Implementation to parse the mention string to ID value.
-   *
-   *  N.B. **A Default Implementation is already provided**.
-   *
-   *  When editing, an initial value can be passed. If that value contains mentions, like: `Hello {{10}} and {{747}}.`
-   *  You provide a regex like /{{[0-9]*}}/m and a match is found: {{10}}. Now you need a function to tell the input how to retrieve the ID in it.
-   */
-  parseMentionId?(stringWithID : string) : number | string,
 
   /** Callback on each input and change to track the length of comment outside the component */
   onLengthChange?(length: number) : void,
@@ -170,8 +176,8 @@ export default function CoreInput(props: CoreInputProps) {
     sending = false,
     moduleClasses,
     mentionParseRegex = defaultMentionRegex,
-    mentionToString = defaultMentionToString,
     parseMentionId = defaultParseMention,
+    mentionToString = defaultMentionToString,
     onEmojiSet,
     onMentionedUserSet,
     onMentionMatch = () => {},

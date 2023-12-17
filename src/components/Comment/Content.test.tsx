@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 
 import Content from './Content';
 import users from '../../data/users';
-import { ContentPart } from '../CommentInput/helper';
+import { ContentPart } from '../CommentInput/CoreInput';
 
 describe('Content', () => {
 

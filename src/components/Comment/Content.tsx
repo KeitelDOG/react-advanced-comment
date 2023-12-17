@@ -1,14 +1,16 @@
 import React, { ReactNode } from 'react';
-import { ContentPart, defaultMentionRegex, defaultParseMention, formatContent } from '../CommentInput/helper';
+import { defaultMentionRegex, defaultParseMention, formatContent } from '../CommentInput/helper';
+import { ContentPart } from '../CommentInput/CoreInput';
 import { User } from '../Mentions/Mentions';
 import defaultClasses from './Content.module.css';
 import { combineClasses } from '../helpers/combineClasses';
+import { ParseMentionProps } from '../CommentInput/CoreInput';
 
-export type ContentProps = {
+export type ContentProps = ParseMentionProps & {
   /** Content to display in the comment component */
   content: string | ContentPart[],
 
-  /** Provide mentioned Users if the comment contains mention.
+  /** Provide mentioned Users if the comment contains mention. Only for string comment.
    * @default []
    */
   mentionedUsers?: User[],
@@ -27,6 +29,8 @@ export default function Content(props : ContentProps) {
   const {
     content,
     mentionedUsers = [],
+    mentionParseRegex = defaultMentionRegex,
+    parseMentionId = defaultParseMention,
     moduleClasses,
     MentionComponent
   } = props;
@@ -38,7 +42,7 @@ export default function Content(props : ContentProps) {
     if (typeof content === 'object') {
       parts = content;
     } else {
-      parts = formatContent(content, mentionedUsers, defaultMentionRegex, defaultParseMention);
+      parts = formatContent(content, mentionedUsers, mentionParseRegex, parseMentionId);
     }
 
     return parts.map(({ type, data }, ind) => {

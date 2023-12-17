@@ -14,7 +14,7 @@ const plugins = [
   peerDepsExternal(),
   resolve(),
   commonjs(),
-  terser({ keep_fnames : /CommentInput|CoreInput|Content|EmojiPicker|Mentions|Avatar|Emoticon|At/ }),
+  terser({ keep_fnames : /CommentInput|CoreInput|Comment|Content|EmojiPicker|Mentions|Avatar|Emoticon|At/ }),
   postcss(),
   svg({
     /**
