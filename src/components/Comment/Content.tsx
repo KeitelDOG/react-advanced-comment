@@ -25,7 +25,7 @@ export type ContentProps = ParseMentionProps & {
   MentionComponent?: (props: { user: User, [key: string]: any }) => React.JSX.Element,
 };
 
-export default function Content(props : ContentProps) {
+export default function CommentContent(props : ContentProps) {
   const {
     content,
     mentionedUsers = [],

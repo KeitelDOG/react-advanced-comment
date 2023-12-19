@@ -5,7 +5,7 @@ import Content from './Content';
 import users from '../../data/users';
 import { ContentPart } from '../CommentInput/CoreInput';
 
-describe('Content', () => {
+describe('CommentContent', () => {
 
   test('should display string comment with custom classes', () => {
     render(

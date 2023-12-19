@@ -11,6 +11,10 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.footer {
+  display: flex;
+  flex-direction: row;
+}
 .anchorWrapper {
   margin-top: 5px;
   display: flex;

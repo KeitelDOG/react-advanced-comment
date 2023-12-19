@@ -46,16 +46,14 @@ export default function ShowMoreText(props : ShowMoreTextProps) {
   const [full, setFull] = React.useState<boolean>(expanded);
   const [showAnchor, setShowAnchor] = React.useState<boolean>(false);
 
-  const trimmedRef = React.useRef(null);
-  const fullRef = React.useRef(null);
+  const trimmedRef = React.useRef<HTMLDivElement>(null);
+  const fullRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    if (trimmedRef.current && fullRef.current) {
-      const trimmedCont = trimmedRef.current as HTMLDivElement;
-      const fullCont = fullRef.current as HTMLDivElement;
-      if (trimmedCont.offsetHeight < fullCont.offsetHeight) {
-        setShowAnchor(true);
-      }
+    const trimmedCont = trimmedRef.current as HTMLDivElement;
+    const fullCont = fullRef.current as HTMLSpanElement;
+    if (trimmedCont.offsetHeight < fullCont.offsetHeight) {
+      setShowAnchor(true);
     }
   }, []);
 
@@ -77,7 +75,7 @@ export default function ShowMoreText(props : ShowMoreTextProps) {
     showLessView = renderShowLess;
   }
 
-  const renderFooter = () => {
+  const renderAnchor = () => {
     if (showAnchor) {
       if (full) {
         return (
@@ -110,10 +108,17 @@ export default function ShowMoreText(props : ShowMoreTextProps) {
     contentStyle = { WebkitLineClamp: numberOfLines } as CSSProperties
   }
 
+  let status = full ? 'expanded' : 'trimmed';
+  if (!showAnchor) {
+    status = 'normal';
+  }
+
   return (
     <div data-class="showMoreTextWrapper" className={classes.showMoreTextWrapper}>
       <div
         ref={trimmedRef}
+        data-testid="trimmed-content"
+        data-status={status}
         data-class="fullContent clampedContent"
         className={classes[contentClassName]}
         style={contentStyle}
@@ -126,7 +131,10 @@ export default function ShowMoreText(props : ShowMoreTextProps) {
           {children}
         </span>
       </div>
-      {renderFooter()}
+
+      <div data-class="footer" className={classes.footer}>
+        {renderAnchor()}
+      </div>
     </div>
   );
 }
