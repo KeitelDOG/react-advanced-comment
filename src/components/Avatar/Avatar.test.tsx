@@ -25,7 +25,10 @@ describe('Avatar', () => {
     expect(img.getAttribute('title')).toBe(users[0].name);
     expect(img.getAttribute('alt')).toBe(users[0].name);
     expect(img.getAttribute('src')).toBe(users[0].image);
-    expect(img.getAttribute('style')).toBe('height: 24px;');
+    expect(img.getAttribute('style')).toContain('24px');
+
+    const info = screen.getByTestId('avatar-info');
+    expect(info.getAttribute('style')).toContain('24px');
 
     const badge = screen.getByTestId('avatar-badge');
     expect(badge.style.backgroundColor).toBe('orange');

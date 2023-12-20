@@ -3,7 +3,7 @@ import React from 'react';
 import EmojiTabs from './EmojiTabs';
 import EmojiCell from './EmojiCell';
 import { combineClasses } from '../helpers/combineClasses';
-import getCategories from './emojiCategories';
+import { getCategories } from './emojiCategories';
 import defaultClasses from './EmojiPicker.module.css';
 import Magnify from '../../svg/Magnify';
 import Close from '../../svg/Close';

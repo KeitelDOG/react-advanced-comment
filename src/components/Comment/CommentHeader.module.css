@@ -1,0 +1,22 @@
+.headerWrapper {
+  display: flex;
+  flex-direction: row;
+}
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+}
+.name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 15px;
+  word-break: break-word;
+  color: #444;
+}
+.timeAgo {
+  margin-top: 2px;
+  font-size: 14px;
+  color: #999;
+}
