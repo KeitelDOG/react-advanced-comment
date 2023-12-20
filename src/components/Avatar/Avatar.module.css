@@ -1,5 +1,8 @@
 .avatarWrapper {
   display: flex;
+}
+.avatarInfo {
+  display: flex;
   position: relative;
 }
 .avatar {

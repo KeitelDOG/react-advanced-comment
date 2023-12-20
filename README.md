@@ -1,8 +1,15 @@
 ## react-advanced-comment
-A React library for commenting with advanced features using contenteditable div mechanism, that supports mentions and emoji interactions.
+A React library for commenting with advanced features using contenteditable div mechanism, that supports mentions and emoji interactions. Components and Emoji light dataset are separated from each others. If you only use 2 components that are 20kb compressed, then your bundle will only grow 20kb.
 
+_Comment Input_:
 <div align="center" style="border: 1px solid #eee;">
 <img width="480" alt="Advanced React Comment" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/4a70198f-cc47-444e-ae2e-f849bfc0be3e">
+</div>
+<br/>
+
+_Comment View_:
+<div align="center" style="border: 1px solid #eee;">
+<img width="480" alt="Advanced React Comment" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/d828dff3-2f74-472b-8aff-eb5a5c9d0e6f">
 </div>
 
 <a href="https://keiteldog.github.io/react-advanced-comment/">Documentation, Demo & Playground</a> (built with Storybook)
@@ -12,16 +19,21 @@ A React library for commenting with advanced features using contenteditable div 
   - Core Input
 - Mentions
 - Emoji Picker
+- Comment
+  - CommentHeader
+  - CommentContent
+  - ShowMoreText
 
 Each feature has multiple components that you can use on their own and combine together. Each one has CSS Module that can be overriden with `moduleClasses` props.
 
-**N.B. : The Comment Input uses a Core Input component internally. And it can integrate existing Mentions selector and Emoji Picker features on rendering, so that you can integrate your own Mentions selector and Emoji Picker.**
+**N.B. : The Comment Input uses a Core Input component internally. And it can integrate existing Mentions selector and Emoji Picker features on rendering, so that you can integrate your own Mentions selector and Emoji Picker. The Comment component uses CommentHeader, ShowMoreText and CommentContent internally.**
 
 ### 📖 Table of Contents
 - [🔑 Installation](#-installation)
 - [💬 Comment Input](#-comment-input)
 - [🗣️ Mentions](#-mentions)
 - [😀 Emoji Picker](#-emoji-picker)
+- [💬 Comment View](#-comment-view)
 - [🔬 Core Input](#-core-input)
 - [🐞 Bug Fixes & Improvements](#-bug-fixes--improvements)
 
@@ -79,6 +91,7 @@ export default function CommentInputTest(props) {
       blockInputOnMaxLength={false}
       mentionsLimit={2}
       clear={clear}
+      contentType="string"
       AvatarComponent={() => <Avatar user={auth} size={32} />}
       renderMentions={({ users, onMentionSelected, onClose }) => (
         <Mentions
@@ -111,6 +124,11 @@ export default function CommentInputTest(props) {
   );
 }
 ```
+
+You can retrieve content from input in 2 formats using props `contentType: 'string' | 'parts'`:
+- `string` like `'Hello {{1}}'`
+- `parts` like `{ type: 'text', data: 'Hello ', type: 'mention', data: { id: 1, name: 'KeitelDOG', image: 'image-url' }}`
+
 <img width="400" alt="Comment Input" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/91a9b9bc-7e01-488f-8c73-033cda8b3872">
 
 ###### Editing
@@ -193,6 +211,7 @@ For all Props, see direct link for Comment Input Documentation: https://keiteldo
 |lineColor|Bottom line color for personalisation to match your Application theme. `string`|`#ccc in css`|
 |tagColor|Color to highlight the tag for mentioned users. `string` |`#358856`|
 |clear|clear input by passing any number greater than zero. You can increment for consecutive clearance. `number`|`0`|
+|contentType|Set which content type shoulb be passed in the onContentChange and onSend callback. String type is the normal and default one. Parts type is an object containing ContentPart objects like: `[{ type: 'text', data: 'Hello ' }, { type: 'mention', data: {id: 1, name: 'KeitelDOG', image: 'image-url' }}]`. `'string' \| 'parts'`|`string`|
 |moduleClasses|A Class Module to provide to override some classes of the default Class Modules. `{ [key: string]: any; }`|`css module`|
 |mentionParseRegex|When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively. N.B.: A Default RegExp is already providedRegExp|`/{{[0-9]*}}/m`,|
 |mentionToString|Implementation to convert mention tag to unique string that identifies the user in the comment. N.B.: A Default Implementation is already provided. It is important to transform each tag in string to make the counting in total text length. For example, if User(10) is Keitel Jovin:`<div>Hello <span data-id="10">Keitel Jovin</span>` will be transfom to  `"Hello {{10}}"`. With `mentionToString(10); // => {{10}}` And `"Hello {{10}}"` will be only 12 chars, instead of 18 chars in "Hello Keitel Jovin" provided by the HTML Div input. An example of algorithm: ``` mentionToString = (id: number \|string) : string => { return `{{${id}}}`;}((id: string \|number) => string)```|-|
@@ -321,6 +340,79 @@ const DynamicEmojiPicker = dynamic(() => import('./EmojiPickerComponent'), {
 
 And `EmojiPickerComponent.jsx` would be a component file that import the Emoji Picker and the Emoji Data that you need.
 
+#### 💬 Comment View
+
+After getting a comment from `CommentInput` like `Hello {{1}} well done.`, it makes sense to be able to display such comment in the Application. Instead of waisting time figuring the algorithm to parse it recursively, you can use the base comment content: `CommentContent`.
+
+The `Comment` View display a full comment by combining `CommentHeader`, and a `ShowMoreText` that wraps a `CommentContent`. The `CommentContent` component is the base part, as it allow to display content with mentions from `string` like:
+```ts
+const content = 'Hello {{1}}';
+return <CommentContent content={content} />
+```
+or from `ContentPart[]` like:
+```ts
+const content : ContentPart[] = [
+  { type: 'text', data: 'Hello World.' },
+  { type: 'newline', data: '\n' },
+  { type: 'mention', data: user },
+];
+
+return <CommentContent content={content} />
+```
+
+Usage for `Comment` (`CommentActions coming soon`):
+
+```tsx
+import { Comment } from '@keiteldog/react-advanced-comment';
+
+//... component function codes
+const content = 'Earum velit et ut veniam {{3}} accusantium ea excepturi modi quidem. Sapiente eum repudiandae iste ut sed et et quis illo. A consequatur esse et. Tempore atque neque 🤷 est. Sapiente explicabo rerum dolorem. Natus 😢 minima doloribus voluptas. Nihil aspernatur mollitia et voluptates reprehenderit dolorem quibusdam aliquid culpa.\nOfficia eum et et molestiae accusantium suscipit itaque aliquam id. Omnis ea quis. Eum tempora nisi qui illo in aliquid exercitationem quaerat nostrum.';
+
+return(
+  <Comment
+    user={auth}
+    mentionedUsers={[users[2]]}
+    content={content}
+    // date={date}
+    timeAgoProps={{
+      date: '2023-12-16 12:30:00', minPeriod: 60
+    }}
+    AvatarComponent={() => (
+      <Avatar user={auth} size={32} />
+    )}
+    renderFooter={
+      <div>add Like, Dislike and Replie buttons</div>
+    }
+  />
+);
+```
+<img width="400" alt="Comment Input" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/9cfde0e0-27bf-4c5c-9fba-927bf475cd64">
+
+For all Props, see direct link for Emoji Picker Documentation: https://keiteldog.github.io/react-advanced-comment/path=/docs/react-advanced-comment-comment--docs
+
+Usage for `CommentContent`:
+
+```tsx
+import { CommentContent, ShowMoreText } from '@keiteldog/react-advanced-comment';
+
+//... component function codes
+const content = 'Hey {{2}} well done 😃.\n\nI like the new App you made {{3}} 👍, pretty nice.';
+
+return (
+    <div style={{ padding: 10, border: '1px dashed #ddd', maxWidth: 480 }}>
+      <ShowMoreText numberOfLines={4} expanded={false}
+      // renderShowMore="More"
+      renderShowMore={<span style={{color: 'blue'}}>Expand</span>}
+      >
+        <Content
+          content={content}
+          mentionedUsers={[users[1], users[2]]}
+        />
+      </ShowMoreText>
+    </div>
+  );
+```
+
 #### 🔬 Core Input
 
 The Core Input controls the behaviors of the input and keep things together and as stable as possible when inserting Emoji and Mention tags. You can use it at a base to complete your fully customized Input like:
@@ -401,6 +493,8 @@ export default function CustomCommentInput() {
 For all Props, see direct link for Core Input Documentation: https://keiteldog.github.io/react-advanced-comment/path=/docs/react-advanced-comment-coreinput--docs
 
 #### 🐞 Bug Fixes & Improvements
+- 18 Dec 2023
+  - Add `Comment` to display full comment view, with `CommentHeader`, `CommentContent` and `ShowMoreText`: `<ShowMoreText><CommentContent/></ShowMoreText>`.
 - 10 Dec 2023
   - Keep SVG Components function name for `Emoticon, At`. Useful for testing with Enzyme shallow rendering.
   - Keep main Components function name in distributed codes. `CommentInput, CoreInput, EmojiPicker, Mentions, Avatar`. Their name will appear in Shallow test for example as `<CommentInput ...>` instead of `<Component ... />`.
@@ -410,9 +504,3 @@ For all Props, see direct link for Core Input Documentation: https://keiteldog.g
 - 8 Dec 2023
   - Add React 16 and 17 as peer dependencies
   - Add Placeholder option in Input
-- 7 Dec 2023
-  - Export Typescript Types in package root
-- 6 Dec 2023
-  - Fix empty space at left of CommentInput when Avatar is not displayed
-  - Add an Option to clear the CommentInput and CoreInput at any time by passing a `clear` prop greater than zero.
-  - Allow input event listeners to be removed and re-added with update users list passed in props.

@@ -1,10 +1,38 @@
-import React, { ForwardedRef, useEffect } from 'react';
+import React from 'react';
 import { combineClasses } from '../helpers/combineClasses';
 import defaultClasses from './CoreInput.module.css';
 import { User } from '../Mentions/Mentions';
-import helper, { ContentPart } from './helper';
+import {
+  formatContent,
+  defaultMentionRegex,
+  defaultParseMention,
+  defaultMentionToString
+} from './helper';
 
-export type BaseInputProps = {
+export type ContentPart = {
+  type: 'text' | 'newline' | 'mention',
+  data: User | string,
+};
+
+export type ParseMentionProps = {
+  /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively.
+   *
+   *  N.B. **A Default RegExp is already provided**
+   * @default '/{{[0-9]*}}/m',
+   */
+  mentionParseRegex?: RegExp,
+
+  /** Implementation to parse the mention string to ID value.
+   *
+   *  N.B. **A Default Implementation is already provided**.
+   *
+   *  When editing, an initial value can be passed. If that value contains mentions, like: `Hello {{10}} and {{747}}.`
+   *  You provide a regex like /{{[0-9]*}}/m and a match is found: {{10}}. Now you need a function to tell the input how to retrieve the ID in it.
+   */
+  parseMentionId?(stringWithID : string) : number | string,
+}
+
+export type BaseInputProps = ParseMentionProps & {
   /** Array of users to match against @ mention and filter while typing.
    * @default []
    */
@@ -51,12 +79,10 @@ export type BaseInputProps = {
   /** clear input by passing any number greater than zero. You can increment for consecutive clearance. */
   clear?: number,
 
-  /** When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively.
-   *
-   *  N.B. **A Default RegExp is already provided**
-   * @default '/{{[0-9]*}}/m',
-   */
-  mentionParseRegex?: RegExp,
+  /** Set which content type shoulb be passed in the onContentChange and onSend callback. String type is the normal and default one. Parts type is an object containing ContentPart objects like: `[{ type: 'text', data: 'Hello ' }, { type: 'mention', data: {id: 1, name: 'KeitelDOG', image: 'image-url' }}]`
+   * @default string
+  */
+  contentType?: 'string' | 'parts',
 
   /** Implementation to convert mention tag to unique string that identifies the user in the comment.
    *
@@ -75,23 +101,14 @@ export type BaseInputProps = {
   */
   mentionToString?(id : number | string) : string,
 
-  /** Implementation to parse the mention string to ID value.
-   *
-   *  N.B. **A Default Implementation is already provided**.
-   *
-   *  When editing, an initial value can be passed. If that value contains mentions, like: `Hello {{10}} and {{747}}.`
-   *  You provide a regex like /{{[0-9]*}}/m and a match is found: {{10}}. Now you need a function to tell the input how to retrieve the ID in it.
-   */
-  parseMentionId?(stringWithID : string) : number | string,
-
   /** Callback on each input and change to track the length of comment outside the component */
   onLengthChange?(length: number) : void,
 
   /** Callback on each input and change to track the whole content outside the component. Might be heavy if text is huge. */
-  onContentChange?(content: string) : void,
+  onContentChange?(content: string | ContentPart[]) : void,
 
   /** Callback on sending the Content back to parent */
-  onSend(content: string) : void,
+  onSend(content: string | ContentPart[]) : void,
 }
 
 export type CoreInputProps = BaseInputProps & {
@@ -136,15 +153,6 @@ type Caret = {
 // No-Break Space (unicode character, equivalent to &nbsp; in HTML)
 const NBSP = '\u00A0';
 
-const mentionToStringDefault = (id: number | string) : string => {
-  return `{{${id}}}`;
-}
-
-const parseMentionIdDefault = (stringWithID: string) : number | string => {
-  const id : string = stringWithID.slice(2, -2);
-  return isNaN(parseInt(id)) ? id : Number(id);
-}
-
 /**
  * The CoreInput and the core functionalities for the comment Input
  * based on an Editable DIV (`<div contenteditable ></div>`)
@@ -164,11 +172,12 @@ export default function CoreInput(props: CoreInputProps) {
     emoji,
     mentionedUser,
     clear = 0,
+    contentType = 'string',
     sending = false,
     moduleClasses,
-    mentionParseRegex = /{{[0-9]*}}/m,
-    mentionToString = mentionToStringDefault,
-    parseMentionId = parseMentionIdDefault,
+    mentionParseRegex = defaultMentionRegex,
+    parseMentionId = defaultParseMention,
+    mentionToString = defaultMentionToString,
     onEmojiSet,
     onMentionedUserSet,
     onMentionMatch = () => {},
@@ -180,9 +189,6 @@ export default function CoreInput(props: CoreInputProps) {
   } = props;
 
   const classes = combineClasses(defaultClasses, moduleClasses);
-
-  // set editable
-  const [initialized, setInitialized] = React.useState(false);
 
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -204,8 +210,19 @@ export default function CoreInput(props: CoreInputProps) {
     // handle content change
     const content: string = getContent();
     onLengthChange(content.length);
+
     if (onContentChange) {
-      onContentChange(content);
+      if (contentType === 'parts') {
+        const parts : ContentPart[] = formatContent(
+          content,
+          users,
+          mentionParseRegex,
+          parseMentionId
+        );
+        onContentChange(parts);
+      } else {
+        onContentChange(content);
+      }
     }
 
     // validate in content is within limit
@@ -497,7 +514,7 @@ export default function CoreInput(props: CoreInputProps) {
   React.useEffect(() => {
     const editable: HTMLDivElement = ref.current as HTMLDivElement;
     if (initialValue) {
-      const parts : ContentPart[] = helper.formatContent(
+      const parts : ContentPart[] = formatContent(
         initialValue,
         initialMentionedUsers,
         mentionParseRegex,
@@ -506,20 +523,12 @@ export default function CoreInput(props: CoreInputProps) {
 
       parts.forEach((part : ContentPart) => {
         if (part.type === 'text') {
-          // check for new line
           const textContent : string = part.data as string;
-          const lines : string[] = textContent.split(/\r\n|\r|\n/);
-          lines.forEach((line: string, ind: number) => {
-            const text = document.createTextNode(line);
-            editable.append(text);
-
-            // add BR tag if not the last line
-            if (ind !== lines.length - 1) {
-              const br = document.createElement('br');
-              editable.append(br);
-            }
-          })
-
+          const text = document.createTextNode(textContent);
+          editable.append(text);
+        } else if (part.type === 'newline') {
+          const br = document.createElement('br');
+          editable.append(br);
         } else if (part.type === 'mention') {
           const usr: User = part.data as User;
           const tag = createMentionTag(usr);
@@ -885,10 +894,19 @@ export default function CoreInput(props: CoreInputProps) {
     }
   }, [emoji]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (sending) {
-      const cnt = getContent();
-      onSend(cnt);
+      const content = getContent();
+      if (contentType === 'parts') {
+        const parts : ContentPart[] = formatContent(
+          content,
+          users,
+          mentionParseRegex,
+          parseMentionId
+        );
+        onSend(parts);
+      }
+      onSend(content);
     }
   }, [sending]);
 

@@ -79,8 +79,7 @@ export type CommentInputProps = BaseInputProps & {
   /** Render the Picker list at default position, at bottom. If not you will provide your own custom styles to display it */
   renderEmojiPickerInDefaultPosition?: boolean,
 
-  /** Component for Authenticated User Avatar in needed. */
-  // renderAvatar?: React.ReactNode,
+  /** Component for Authenticated User Avatar if needed. */
   AvatarComponent?: () => React.JSX.Element,
 
   /** Render the Icon responsible to open the EmojiPicker if needed. An Icon is rendered by default. */
@@ -163,6 +162,7 @@ export default function CommentInput(props : CommentInputProps) {
     atIconColor = '#cc701e',
     emojiIconColor = '#fbbf07',
     clear = 0,
+    contentType = 'string',
     moduleClasses,
     mentionParseRegex,
     mentionToString,
@@ -337,6 +337,7 @@ export default function CommentInput(props : CommentInputProps) {
             mentionsLimit={mentionsLimit}
             lineColor={lineColor}
             tagColor={tagColor}
+            contentType={contentType}
             mentionParseRegex={mentionParseRegex}
             mentionToString={mentionToString}
             parseMentionId={parseMentionId}

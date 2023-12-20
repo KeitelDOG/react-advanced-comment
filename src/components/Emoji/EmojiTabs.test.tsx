@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 import EmojiTabs from './EmojiTabs';
-import getCategories from './emojiCategories';
+import { getCategories} from './emojiCategories';
 
 const categories = getCategories();
 
