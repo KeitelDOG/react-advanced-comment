@@ -91,6 +91,7 @@ export default function CommentInputTest(props) {
       blockInputOnMaxLength={false}
       mentionsLimit={2}
       clear={clear}
+      contentType="string"
       AvatarComponent={() => <Avatar user={auth} size={32} />}
       renderMentions={({ users, onMentionSelected, onClose }) => (
         <Mentions
@@ -123,6 +124,11 @@ export default function CommentInputTest(props) {
   );
 }
 ```
+
+You can retrieve content from input in 2 formats using props `contentType: 'string' | 'parts'`:
+- `string` like `'Hello {{1}}'`
+- `parts` like `{ type: 'text', data: 'Hello ', type: 'mention', data: { id: 1, name: 'KeitelDOG', image: 'image-url' }}`
+
 <img width="400" alt="Comment Input" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/91a9b9bc-7e01-488f-8c73-033cda8b3872">
 
 ###### Editing
@@ -205,6 +211,7 @@ For all Props, see direct link for Comment Input Documentation: https://keiteldo
 |lineColor|Bottom line color for personalisation to match your Application theme. `string`|`#ccc in css`|
 |tagColor|Color to highlight the tag for mentioned users. `string` |`#358856`|
 |clear|clear input by passing any number greater than zero. You can increment for consecutive clearance. `number`|`0`|
+|contentType|Set which content type shoulb be passed in the onContentChange and onSend callback. String type is the normal and default one. Parts type is an object containing ContentPart objects like: `[{ type: 'text', data: 'Hello ' }, { type: 'mention', data: {id: 1, name: 'KeitelDOG', image: 'image-url' }}]`. `'string' \| 'parts'`|`string`|
 |moduleClasses|A Class Module to provide to override some classes of the default Class Modules. `{ [key: string]: any; }`|`css module`|
 |mentionParseRegex|When passing an initialValue, you can provide a regular expression to retrieve the mention expressions containing the User ID if any. The regex should only match the first occurence, the algorithm will split and retrieve them recursively. N.B.: A Default RegExp is already providedRegExp|`/{{[0-9]*}}/m`,|
 |mentionToString|Implementation to convert mention tag to unique string that identifies the user in the comment. N.B.: A Default Implementation is already provided. It is important to transform each tag in string to make the counting in total text length. For example, if User(10) is Keitel Jovin:`<div>Hello <span data-id="10">Keitel Jovin</span>` will be transfom to  `"Hello {{10}}"`. With `mentionToString(10); // => {{10}}` And `"Hello {{10}}"` will be only 12 chars, instead of 18 chars in "Hello Keitel Jovin" provided by the HTML Div input. An example of algorithm: ``` mentionToString = (id: number \|string) : string => { return `{{${id}}}`;}((id: string \|number) => string)```|-|
