@@ -81,6 +81,7 @@ export default function Avatar(props: AvatarProps) {
       <div
         title={user.name}
         data-class="avatarInfo"
+        data-testid="avatar-info"
         className={classes.avatarInfo}
         style={{ height: size, width: size }}
       >
