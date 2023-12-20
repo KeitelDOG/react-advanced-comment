@@ -30,7 +30,7 @@ export type CommentProps = ParseMentionProps & {
   timeAgoProps?: ReactTimeagoProps,
 
   /** A Class Module to provide to override some classes of the default Class Modules.
-   *  classes: `commentWrapper,contentSection`
+   *  classes: `commentWrapper, contentSection`
    * @default css module
   */
   moduleClasses?: { [key : string] : any },

@@ -31,7 +31,7 @@ export type AvatarProps = {
   badgeColor?: string,
 
   /** A Class Module to provide to override some classes of the default Class Modules.
-   * classes: `avatarWrapper, avatar, avatarLabel, avatarImage, badgeWrapper, badge`
+   * classes: `avatarWrapper, avatarInfo, avatar, avatarLabel, avatarImage, badgeWrapper, badge`
   */
   moduleClasses?: { [key : string] : any },
 }
@@ -42,53 +42,63 @@ export default function Avatar(props: AvatarProps) {
     guestName = 'Gst',
     size = 38,
     showBadge = true,
-    badgeColor= 'green',
+    badgeColor= '#358856',
     moduleClasses
   } = props;
   const classes = combineClasses(defaultClasses, moduleClasses);
 
   if (!user) {
     return (
-      <div data-class="avatar" className={classes.avatar}>
+      <div
+        data-class="avatar"
+        className={classes.avatar}
+        style={{ height: size, width: size }}
+      >
         <span aria-label="guest avatar" data-class="avatarLabel" className={classes.avatarLabel}>{guestName}</span>
       </div>
     );
   }
 
   let userView = (
-    <div data-class="avatar" className={classes.avatar}>
-      <span  aria-label={`${user.name} avatar`} className={classes.avatarLabel}>{user.name[0]}</span>
-    </div>
+    <span  aria-label={`${user.name} avatar`} className={classes.avatarLabel}>{user.name[0]}</span>
   );
 
   if (user.image) {
     userView = (
-      <div data-class="avatar" className={classes.avatar}>
-        <img
-          alt={user.name}
-          title={user.name}
-          src={user.image}
-          data-class="avatarImage"
-          className={classes.avatarImage}
-          style={{ height: size }}
-        />
-      </div>
+      <img
+        alt={user.name}
+        title={user.name}
+        src={user.image}
+        data-class="avatarImage"
+        className={classes.avatarImage}
+        style={{ height: size, width: size }}
+      />
     );
   }
 
   return (
     <div data-class="avatarWrapper" className={classes.avatarWrapper}>
-      <div title={user.name}>{userView}</div>
-      {showBadge && (
-        <div data-class="badgeWrapper" className={classes.badgeWrapper}>
-          <div
-            data-testid="avatar-badge"
-            data-class="badge"
-            className={classes.badge}
-            style={{ backgroundColor: badgeColor }}
-          />
+      <div
+        title={user.name}
+        data-class="avatarInfo"
+        className={classes.avatarInfo}
+        style={{ height: size, width: size }}
+      >
+        <div data-class="avatar" className={classes.avatar}>
+          {userView}
         </div>
-      )}
+
+        {showBadge && (
+          <div data-class="badgeWrapper" className={classes.badgeWrapper}>
+            <div
+              data-testid="avatar-badge"
+              data-class="badge"
+              className={classes.badge}
+              style={{ backgroundColor: badgeColor }}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

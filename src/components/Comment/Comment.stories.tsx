@@ -64,7 +64,10 @@ MainComment.args = {
   user: users[0],
   mentionedUsers: [users[2]],
   // date: '2023-12-16 12:30:00',
-  timeAgoProps: { date: '2023-12-16 12:30:00', minPeriod: 60 },
+  timeAgoProps: {
+    date: '2023-12-16 12:30:00',
+    minPeriod: 60
+  },
   AvatarComponent: () => <Avatar user={users[0]} size={32} />,
   /* MentionComponent: ({ user }) => {
     return <span style={{ color: 'green' }}>{user.name}</span>;

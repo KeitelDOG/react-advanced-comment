@@ -22,7 +22,7 @@ export type ShowMoreTextProps = {
   renderShowLess?: string | React.ReactNode,
 
   /** A Class Module to provide to override some classes of the default Class Modules.
-   *  classes: `content, mention`
+   *  classes: `showMoreTextWrapper, fullContent, clampedContent, footer, anchorWrapper, anchor`
    * @default css module
   */
   moduleClasses?: { [key : string] : any },

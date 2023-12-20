@@ -15,7 +15,7 @@ export type CommentHeaderProps = {
   timeAgoProps?: ReactTimeagoProps,
 
   /** A Class Module to provide to override some classes of the default Class Modules.
-   *  classes: `headerWrapper,userInfo,name,timeAgo`
+   *  classes: `headerWrapper, userInfo, name, timeAgo`
    * @default css module
   */
   moduleClasses?: { [key : string] : any },
