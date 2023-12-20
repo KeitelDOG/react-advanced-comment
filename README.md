@@ -362,21 +362,21 @@ import { Comment } from '@keiteldog/react-advanced-comment';
 const content = 'Earum velit et ut veniam {{3}} accusantium ea excepturi modi quidem. Sapiente eum repudiandae iste ut sed et et quis illo. A consequatur esse et. Tempore atque neque 🤷 est. Sapiente explicabo rerum dolorem. Natus 😢 minima doloribus voluptas. Nihil aspernatur mollitia et voluptates reprehenderit dolorem quibusdam aliquid culpa.\nOfficia eum et et molestiae accusantium suscipit itaque aliquam id. Omnis ea quis. Eum tempora nisi qui illo in aliquid exercitationem quaerat nostrum.';
 
 return(
-  <div>
-    <Comment
-      user={auth}
-      mentionedUsers={[users[2]]}
-      content={content}
-      // date={date}
-      timeAgoProps={{
-        date: '2023-12-16 12:30:00', minPeriod: 60
-      }}
-      AvatarComponent={() => (
-        <Avatar user={auth} size={32} />
-      )}
-    />
-    <div>add Like, Dislike and Replie buttons</div>
-  <div>
+  <Comment
+    user={auth}
+    mentionedUsers={[users[2]]}
+    content={content}
+    // date={date}
+    timeAgoProps={{
+      date: '2023-12-16 12:30:00', minPeriod: 60
+    }}
+    AvatarComponent={() => (
+      <Avatar user={auth} size={32} />
+    )}
+    renderFooter={
+      <div>add Like, Dislike and Replie buttons</div>
+    }
+  />
 );
 ```
 <img width="400" alt="Comment Input" src="https://github.com/KeitelDOG/react-advanced-comment/assets/14042152/9cfde0e0-27bf-4c5c-9fba-927bf475cd64">

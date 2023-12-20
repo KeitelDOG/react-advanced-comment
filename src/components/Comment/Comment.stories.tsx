@@ -6,7 +6,7 @@ import Avatar from '../Avatar';
 import Like from '../../svg/Like';
 
 export default {
-  title: 'React Advanced Comment/Comment',
+  title: 'React Advanced Comment/Comment/Comment',
   component: Comment,
   tags: ['autodocs'],
 };

@@ -14,7 +14,7 @@ import objects from '../../svg/Objects';
 import symbols from '../../svg/Symbols';
 import flags from '../../svg/Flags';
 
-export default function getCategories(colors : Colors = {}) {
+export function getCategories(colors : Colors = {}) {
   const defaultColor = '#aaa';
   return {
     history: {

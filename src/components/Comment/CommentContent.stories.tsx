@@ -1,24 +1,24 @@
-import React, { MouseEventHandler } from 'react';
+import React from 'react';
 import { StoryFn, Meta } from '@storybook/react';
-import Content from './Content';
+import CommentContent from './CommentContent';
 import users from '../../data/users';
 import { formatContent, defaultMentionRegex, defaultParseMention } from '../CommentInput/helper';
 import ShowMoreText from './ShowMoreText';
 // import customCSSModule from './CommentCustom.module.css';
 
 export default {
-  title: 'React Advanced Comment/Content',
-  component: Content,
+  title: 'React Advanced Comment/Comment/CommentContent',
+  component: CommentContent,
   tags: ['autodocs'],
 };
 
-const Template: StoryFn<typeof Content> = (args) => {
+const Template: StoryFn<typeof CommentContent> = (args) => {
   return (
     <div style={{ padding: 10, border: '1px dashed #ddd', maxWidth: 480 }}>
       <ShowMoreText numberOfLines={4} expanded={false}
         // renderShowMore={<span style={{color: 'blue'}}>Expand</span>}
       >
-        <Content {...args} />
+        <CommentContent {...args} />
       </ShowMoreText>
     </div>
   );
@@ -35,7 +35,7 @@ const parts = formatContent(
   defaultParseMention,
 );
 
-export const MainContent: Meta<typeof Content> = Template.bind({});
+export const MainContent: Meta<typeof CommentContent> = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 MainContent.args = {
   content: parts,

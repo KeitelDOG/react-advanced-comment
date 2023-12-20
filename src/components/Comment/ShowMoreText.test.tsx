@@ -3,8 +3,6 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import ShowMoreText from './ShowMoreText';
-import users from '../../data/users';
-
 const longContent = (
   <p role="paragraph" style={{ display: 'inline' }}>
     Earum velit et ut veniam

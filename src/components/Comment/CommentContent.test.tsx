@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 
-import Content from './Content';
+import CommentContent from './CommentContent';
 import users from '../../data/users';
 import { ContentPart } from '../CommentInput/CoreInput';
 
@@ -9,7 +9,7 @@ describe('CommentContent', () => {
 
   test('should display string comment with custom classes', () => {
     render(
-      <Content
+      <CommentContent
         content="Hello World."
         moduleClasses={{ content: 'hashclass' }}
       />
@@ -21,7 +21,7 @@ describe('CommentContent', () => {
   test('should display comment with mentioned Users', () => {
     const content = 'Hey {{2}} well done 😃.\n\nI like the new App you made {{3}} 👍, pretty nice.';
     render(
-      <Content
+      <CommentContent
         content={content}
         mentionedUsers={[users[1], users[2]]}
       />
@@ -35,7 +35,7 @@ describe('CommentContent', () => {
     const content = 'Hello {{2}}';
     const customLabel = `${users[1].name} custom mentioned`;
     render(
-      <Content
+      <CommentContent
         content={content}
         mentionedUsers={[users[1]]}
         MentionComponent={({ user }) => {
@@ -60,7 +60,7 @@ describe('CommentContent', () => {
     ];
 
     render(
-      <Content
+      <CommentContent
         content={parts}
         moduleClasses={{ content: 'hashclass' }}
       />

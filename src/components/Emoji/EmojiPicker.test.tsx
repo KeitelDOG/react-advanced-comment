@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 
 import EmojiPicker from './EmojiPicker';
-import getCategories, { CategoryName } from './emojiCategories';
+import { getCategories, CategoryName } from './emojiCategories';
 import emojis from '../../json/emoji-datasource-testing.json';
 import userEvent from '@testing-library/user-event';
 

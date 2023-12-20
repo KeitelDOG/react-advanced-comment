@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from '../Mentions/Mentions';
-import defaultClasses from './Header.module.css';
+import defaultClasses from './CommentHeader.module.css';
 import { combineClasses } from '../helpers/combineClasses';
 import ReactTimeago, { ReactTimeagoProps } from 'react-timeago';
 

@@ -2,14 +2,14 @@ import React from 'react';
 import { defaultMentionRegex, defaultParseMention } from '../CommentInput/helper';
 import { ContentPart } from '../CommentInput/CoreInput';
 import { User } from '../Mentions/Mentions';
-import Content from './Content';
+import CommentContent from './CommentContent';
 import ShowMoreText from './ShowMoreText';
 import defaultClasses from './Comment.module.css';
 import { combineClasses } from '../helpers/combineClasses';
 import { ParseMentionProps } from '../CommentInput/CoreInput';
 import { ReactTimeagoProps } from 'react-timeago';
 
-import CommentHeader from './Header';
+import CommentHeader from './CommentHeader';
 
 export type CommentProps = ParseMentionProps & {
   /** User that made the comment */
@@ -75,7 +75,7 @@ export default function Comment(props : CommentProps) {
           numberOfLines={4}
           expanded={false}
         >
-          <Content
+          <CommentContent
             content={content}
             mentionedUsers={mentionedUsers}
             mentionParseRegex={mentionParseRegex}

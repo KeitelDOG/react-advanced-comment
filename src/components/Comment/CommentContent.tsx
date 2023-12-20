@@ -2,11 +2,11 @@ import React, { ReactNode } from 'react';
 import { defaultMentionRegex, defaultParseMention, formatContent } from '../CommentInput/helper';
 import { ContentPart } from '../CommentInput/CoreInput';
 import { User } from '../Mentions/Mentions';
-import defaultClasses from './Content.module.css';
+import defaultClasses from './CommentContent.module.css';
 import { combineClasses } from '../helpers/combineClasses';
 import { ParseMentionProps } from '../CommentInput/CoreInput';
 
-export type ContentProps = ParseMentionProps & {
+export type CommentContentProps = ParseMentionProps & {
   /** Content to display in the comment component */
   content: string | ContentPart[],
 
@@ -25,7 +25,7 @@ export type ContentProps = ParseMentionProps & {
   MentionComponent?: (props: { user: User, [key: string]: any }) => React.JSX.Element,
 };
 
-export default function CommentContent(props : ContentProps) {
+export default function CommentContent(props : CommentContentProps) {
   const {
     content,
     mentionedUsers = [],

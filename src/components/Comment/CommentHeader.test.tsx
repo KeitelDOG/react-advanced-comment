@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 
-import Header from './Header';
+import CommentHeader from './CommentHeader';
 import users from '../../data/users';
 
 const Avatar = () => (
@@ -14,7 +14,7 @@ describe('CommentHeader', () => {
 
   test('should display header with user info with custom classes', () => {
     render(
-      <Header
+      <CommentHeader
         user={users[0]}
         date={date}
         AvatarComponent={Avatar}
@@ -34,7 +34,7 @@ describe('CommentHeader', () => {
 
   test('should render time from ReactTimeago with timeAgoProps', () => {
     render(
-      <Header
+      <CommentHeader
         user={users[0]}
         AvatarComponent={Avatar}
         timeAgoProps={{
