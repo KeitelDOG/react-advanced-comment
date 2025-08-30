@@ -421,13 +421,9 @@ export default function CommentInput(props : CommentInputProps) {
             <div data-class="toolsRightSection" className={classes.toolsRightSection}>
               {maxLength && (
                 <div className={classes.tool}>
-                  <meter
+                  <div
                     role="meter"
                     aria-label="Text Progress"
-                    min={0}
-                    high={80}
-                    max={100}
-                    value={percent}
                     data-class="textProgress"
                     className={classes.textProgress}
                     style={progressStyle}
@@ -439,7 +435,7 @@ export default function CommentInput(props : CommentInputProps) {
                     >
                       {charsRemained <= showCounterAt ? charsRemained : ''}
                     </span>
-                  </meter>
+                  </div>
                 </div>
               )}
 
