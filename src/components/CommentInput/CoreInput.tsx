@@ -587,6 +587,14 @@ export default function CoreInput(props: CoreInputProps) {
         setCaretValue(crt);
       };
 
+      const onPaste = (event: ClipboardEvent) => {
+        // Prevent the default action
+        event.preventDefault();
+        const pastedText = (event.clipboardData as DataTransfer).getData('text/plain');
+        // TODO: document.execCommand is deprecated, in the future, use Selection and Range to insert the pasted text
+        document.execCommand('insertText', false, pastedText);
+      }
+
       // ON INPUT ----
       const onInput = (event: Event) => {
         const val = (event.target as HTMLDivElement).textContent as string;
@@ -696,6 +704,7 @@ export default function CoreInput(props: CoreInputProps) {
       editable.addEventListener('keydown', onKeydown);
       editable.addEventListener('click', onClick);
       editable.addEventListener('input', onInput);
+      editable.addEventListener('paste', onPaste);
 
       return () => {
         // remove the listeners before useEffect fires again or CoreInput component will unmount
@@ -703,6 +712,7 @@ export default function CoreInput(props: CoreInputProps) {
         editable.removeEventListener('focus', onFocus);
         editable.removeEventListener('keydown', onKeydown);
         editable.removeEventListener('click', onClick);
+        editable.addEventListener('paste', onPaste);
       }
   }, [users]);
 
